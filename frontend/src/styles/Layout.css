@@ -1,0 +1,14 @@
+.app-layout{
+    display:flex;
+    min-height:100vh;
+}
+
+.main-section{
+    margin-left:260px;
+    width:calc(100% - 260px);
+    
+}
+
+.page-content{
+    padding:15px 35px 35px;
+}
