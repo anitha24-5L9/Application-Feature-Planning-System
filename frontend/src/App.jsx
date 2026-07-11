@@ -14,6 +14,8 @@ import Releases from "./pages/Releases";
 import Environments from "./pages/Environments";
 import AuditLogs from "./pages/AuditLogs";
 
+import FlagDetail from "./pages/FlagDetail";
+
 function App() {
   return (
     <div className="app-layout">
@@ -31,6 +33,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
 
             <Route path="/features" element={<Features />} />
+
+            <Route path="/flags/:key" element={<FlagDetail />} />
 
             <Route path="/releases" element={<Releases />} />
 

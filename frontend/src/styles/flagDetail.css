@@ -1,0 +1,86 @@
+.flag-detail-page {
+    padding: 30px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #2563EB;
+    font-weight: 600;
+}
+
+.page-title {
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-size: 30px;
+    color: #0F172A;
+}
+
+
+
+
+
+
+.label {
+    color: #64748B;
+    font-weight: 600;
+}
+
+.value {
+    color: #0F172A;
+    font-weight: 500;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.enabled {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.disabled {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-table td {
+    padding: 14px 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.detail-table tr:last-child td {
+    border-bottom: none;
+}
+
+.label {
+    width: 220px;
+    color: #64748B;
+    font-weight: 600;
+}
+
+.value {
+    color: #111827;
+    font-weight: 500;
+}
+
+.placeholder-box {
+    background: #F8FAFC;
+    border: 2px dashed #CBD5E1;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: #64748B;
+    font-size: 15px;
+}
+
+

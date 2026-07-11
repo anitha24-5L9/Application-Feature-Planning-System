@@ -2,7 +2,12 @@ from sqlalchemy.orm import Session
 from app.models.flag import Flag
 
 
-def evaluate_flag(db: Session, flag_key: str, environment: str):
+def evaluate_flag(
+    db: Session,
+    flag_key: str,
+    environment: str,
+    user_context: dict | None = None
+):
     flag = db.query(Flag).filter(Flag.key == flag_key).first()
 
     if not flag:
@@ -11,13 +16,28 @@ def evaluate_flag(db: Session, flag_key: str, environment: str):
             "message": "Flag not found"
         }
 
-    # Day 4 logic
-    # Currently only checks enabled/disabled state.
-    # Environment override will be added later.
+    # Case 1
+    # Disabled flag always returns False
+
+    if not flag.enabled:
+        return {
+            "success": True,
+            "flag": flag.key,
+            "environment": environment,
+            "enabled": False
+        }
+
+    # Case 2
+    # Placeholder environment override
+
+    if environment.lower() == "production":
+        enabled = flag.enabled
+    else:
+        enabled = flag.enabled
 
     return {
         "success": True,
         "flag": flag.key,
         "environment": environment,
-        "enabled": flag.enabled
+        "enabled": enabled
     }

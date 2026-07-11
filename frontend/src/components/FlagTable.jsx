@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 function FlagTable({ flags }) {
   return (
     <table className="flag-table">
@@ -26,11 +27,15 @@ function FlagTable({ flags }) {
 
             <tr key={flag.id}>
 
-              <td>
+             <td>
 
-                <strong>{flag.key}</strong>
+  <Link to={`/flags/${flag.key}`}>
 
-              </td>
+    <strong>{flag.key}</strong>
+
+  </Link>
+
+</td>
 
               <td>
 

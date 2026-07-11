@@ -31,3 +31,20 @@ export async function createFlag(flag) {
 
   return response.json();
 }
+export async function getFlag(key) {
+  console.log("Calling:", `${API_URL}/flags/${key}`);
+
+  const response = await fetch(`${API_URL}/flags/${key}`);
+
+  console.log("Response status:", response.status);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch flag");
+  }
+
+  const data = await response.json();
+
+  console.log("Response data:", data);
+
+  return data;
+}
