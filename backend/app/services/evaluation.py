@@ -1,6 +1,11 @@
 from sqlalchemy.orm import Session
 from app.models.flag import Flag
 
+VALID_ENVIRONMENTS = [
+    "development",
+    "staging",
+    "production"
+]
 
 def evaluate_flag(
     db: Session,
@@ -8,13 +13,18 @@ def evaluate_flag(
     environment: str,
     user_context: dict | None = None
 ):
+    if environment.lower() not in VALID_ENVIRONMENTS:
+        return {
+        "success": False,
+        "message": "Invalid environment"
+    }
     flag = db.query(Flag).filter(Flag.key == flag_key).first()
 
     if not flag:
         return {
-            "success": False,
-            "message": "Flag not found"
-        }
+        "success": False,
+        "message": "Feature flag not found"
+    }
 
     # Case 1
     # Disabled flag always returns False

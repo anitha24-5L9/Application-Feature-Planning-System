@@ -38,7 +38,15 @@ def read_flag(key: str, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=FlagResponse)
 def add_flag(flag: FlagCreate, db: Session = Depends(get_db)):
-    return create_flag(db, flag)
+    new_flag = create_flag(db, flag)
+
+    if not new_flag:
+        raise HTTPException(
+            status_code=409,
+            detail="Feature key already exists"
+        )
+
+    return new_flag
 
 
 @router.put("/{key}", response_model=FlagResponse)

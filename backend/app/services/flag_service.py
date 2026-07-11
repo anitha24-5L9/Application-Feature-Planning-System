@@ -10,12 +10,18 @@ def get_flags(db: Session):
 def get_flag_by_key(db: Session, key: str):
     return db.query(Flag).filter(Flag.key == key).first()
 
-
 def create_flag(db: Session, flag: FlagCreate):
+    # Check if the feature key already exists
+    existing_flag = db.query(Flag).filter(Flag.key == flag.key).first()
+
+    if existing_flag:
+        return None
+
     db_flag = Flag(**flag.model_dump())
     db.add(db_flag)
     db.commit()
     db.refresh(db_flag)
+
     return db_flag
 
 
