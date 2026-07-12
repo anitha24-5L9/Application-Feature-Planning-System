@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getFlags } from "../services/api";
 import "../styles/dashboard.css";
@@ -17,6 +18,7 @@ import {
 
 
 export default function Dashboard() {
+    const navigate = useNavigate();
 
 
   const COLORS = ["#10b981", "#ef4444"];
@@ -473,15 +475,19 @@ Quick Actions
 </h2>
 
 
-<button className="quick-btn">
 
+<button
+className="quick-btn"
+onClick={() => navigate("/features?action=create")}
+>
 ➕ Create Feature
-
 </button>
 
 
-
-<button className="quick-btn">
+<button
+className="quick-btn"
+onClick={() => navigate("/evaluate")}
+>
 
 ⚡ Evaluate Flag
 
@@ -489,12 +495,14 @@ Quick Actions
 
 
 
-<button className="quick-btn">
+<button
+className="quick-btn"
+onClick={() => navigate("/audit-logs")}
+>
 
 📋 Audit Logs
 
 </button>
-
 
 
 </div>

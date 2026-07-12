@@ -15,7 +15,7 @@ import Environments from "./pages/Environments";
 import AuditLogs from "./pages/AuditLogs";
 
 import FlagDetail from "./pages/FlagDetail";
-
+import EvaluateFlag from "./pages/EvaluateFlag";
 function App() {
   return (
     <div className="app-layout">
@@ -41,6 +41,7 @@ function App() {
             <Route path="/environments" element={<Environments />} />
 
             <Route path="/audit-logs" element={<AuditLogs />} />
+            <Route path="/evaluate" element={<EvaluateFlag />} />
 
           </Routes>
 

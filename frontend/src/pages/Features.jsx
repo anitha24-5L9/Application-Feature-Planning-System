@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import AddFlagForm from "../components/AddFlagForm";
@@ -9,10 +10,15 @@ import { getFlags, createFlag } from "../services/api";
 import "../styles/flag.css";
 
 function Features() {
+  const [searchParams] = useSearchParams();
+
+  const action = searchParams.get("action");
 
   const [flags,setFlags]=useState([]);
 
-  const [open,setOpen]=useState(false);
+  const [open,setOpen]=useState(
+  action === "create"
+);
 
   useEffect(()=>{
 

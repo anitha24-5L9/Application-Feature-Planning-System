@@ -4,11 +4,11 @@ import "./../styles/sidebar.css";
 export default function Sidebar(){
 
     const menu=[
-        {name:"Dashboard",path:"/"},
-        {name:"Features",path:"/features"},
-        {name:"Releases",path:"/releases"},
-        {name:"Environments",path:"/environments"},
-        {name:"Audit Logs",path:"/audit-logs"},
+        {name:"📊Dashboard",path:"/"},
+        {name:"🚩Features",path:"/features"},
+        {name:"🚀Releases",path:"/releases"},
+        {name:"🌍Environments",path:"/environments"},
+        {name:"📋Audit Logs",path:"/audit-logs"},
     ];
 
     return(
