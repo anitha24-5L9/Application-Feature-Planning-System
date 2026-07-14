@@ -12,6 +12,7 @@ Base.metadata.create_all(bind=engine)
 # Import Routers
 from app.routers.flag_router import router as flag_router
 from app.routers.evaluation import router as evaluation_router
+from app.routers.targeting_router import router as targeting_router
 
 app = FastAPI(
     title="Application Feature Planning and Release Governance System",
@@ -21,6 +22,7 @@ app = FastAPI(
 # Register Routers
 app.include_router(flag_router)
 app.include_router(evaluation_router)
+app.include_router(targeting_router)
 
 # CORS Configuration
 app.add_middleware(

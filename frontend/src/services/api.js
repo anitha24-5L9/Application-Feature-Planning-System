@@ -48,3 +48,46 @@ export async function getFlag(key) {
 
   return data;
 }
+export async function getTargetUsers(flagKey) {
+
+  const response = await fetch(
+    `http://127.0.0.1:8000/targeting/users/${flagKey}`
+  );
+
+  return response.json();
+
+}
+
+export async function addTargetUser(flagKey, userId) {
+
+  await fetch(
+    "http://127.0.0.1:8000/targeting/users/",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        flag_key: flagKey,
+        user_id: userId,
+      }),
+    }
+  );
+
+}
+
+export async function removeTargetUser(flagKey, userId) {
+
+  await fetch(
+
+    `http://127.0.0.1:8000/targeting/users/${flagKey}/${userId}`,
+
+    {
+      method: "DELETE",
+    }
+
+  );
+
+}

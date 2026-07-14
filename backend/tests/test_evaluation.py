@@ -61,3 +61,21 @@ def test_empty_user_context():
     )
 
     assert result["success"] is True
+
+
+def test_targeted_user_evaluation():
+
+    db = DummyDB(DummyFlag("feature5", False))
+
+
+    result = evaluate_flag(
+        db,
+        "feature5",
+        "Development",
+        {
+            "user_id": "tester01"
+        }
+    )
+
+
+    assert result["success"] is True

@@ -1,5 +1,7 @@
 import "./../styles/flagDetail.css";
 
+import TargetingPanel from "../components/TargetingPanel";
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getFlag } from "../services/api";
@@ -92,8 +94,10 @@ function FlagDetail() {
       </table>
 
     </div>
+    <br></br>
+    <br></br>
 
-    
+    <TargetingPanel flagKey={flag.key} />
 
   </div>
 );
