@@ -14,7 +14,8 @@ router = APIRouter(
 @router.post("/")
 def evaluate(request: EvaluationRequest, db: Session = Depends(get_db)):
     return evaluate_flag(
-        db,
-        request.flag_key,
-        request.environment
-    )
+    db,
+    request.flag_key,
+    request.environment,
+    request.user_context
+)

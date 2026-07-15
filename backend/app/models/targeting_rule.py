@@ -11,7 +11,10 @@ class TargetingRule(Base):
     # Feature Flag
     flag_id = Column(Integer, ForeignKey("flags.id"), nullable=False)
 
-    # Whitelisted User ID
-    user_id = Column(String, nullable=False)
+    # User Target
+    user_id = Column(String, nullable=True)
+
+    # Group Target
+    group_name = Column(String, nullable=True)
 
     flag = relationship("Flag")

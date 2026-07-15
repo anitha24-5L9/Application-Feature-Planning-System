@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.flag import Flag
 from app.models.targeting_rule import TargetingRule
+from app.models.user_group_membership import UserGroupMembership
 
 VALID_ENVIRONMENTS = [
     "development",
@@ -51,13 +52,16 @@ def evaluate_flag(
         }
 
     # -----------------------------
-    # Day 7 - User Targeting Rule
+    # User Context
     # -----------------------------
     user_id = None
 
     if user_context:
         user_id = user_context.get("user_id")
 
+    # -----------------------------
+    # Day 7 - User Targeting Rule
+    # -----------------------------
     if user_id:
 
         targeted_user = (
@@ -76,6 +80,43 @@ def evaluate_flag(
                 "environment": environment,
                 "enabled": True
             }
+
+    # -----------------------------
+    # Day 8 - Group Targeting Rule
+    # -----------------------------
+    if user_id:
+
+        memberships = (
+            db.query(UserGroupMembership)
+            .filter(
+                UserGroupMembership.user_id == user_id
+            )
+            .all()
+        )
+
+        user_groups = [
+            membership.group_name
+            for membership in memberships
+        ]
+
+        if user_groups:
+
+            targeted_group = (
+                db.query(TargetingRule)
+                .filter(
+                    TargetingRule.flag_id == flag.id,
+                    TargetingRule.group_name.in_(user_groups)
+                )
+                .first()
+            )
+
+            if targeted_group:
+                return {
+                    "success": True,
+                    "flag": flag.key,
+                    "environment": environment,
+                    "enabled": True
+                }
 
     # -----------------------------
     # Default Evaluation

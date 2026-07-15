@@ -91,3 +91,39 @@ export async function removeTargetUser(flagKey, userId) {
   );
 
 }
+
+export async function getTargetGroups(flagKey) {
+  const response = await fetch(
+    `http://127.0.0.1:8000/targeting/groups/${flagKey}`
+  );
+
+  return response.json();
+}
+
+
+export async function addTargetGroup(data) {
+  const response = await fetch(
+    "http://127.0.0.1:8000/targeting/groups/",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+
+  return response.json();
+}
+
+
+export async function removeTargetGroup(flagKey, groupName) {
+  const response = await fetch(
+    `http://127.0.0.1:8000/targeting/groups/${flagKey}/${groupName}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  return response.json();
+}
