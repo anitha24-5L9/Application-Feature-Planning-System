@@ -1,4 +1,7 @@
-from app.services.evaluation import evaluate_flag
+from app.services.evaluation import (
+    evaluate_flag,
+    is_user_in_rollout
+)
 
 
 class DummyFlag:
@@ -79,3 +82,52 @@ def test_targeted_user_evaluation():
 
 
     assert result["success"] is True
+
+def test_rollout_zero_percent():
+
+    result = is_user_in_rollout(
+        user_id="anitha",
+        flag_key="new_dashboard",
+        rollout_percentage=0
+    )
+
+    assert result is False
+
+
+def test_rollout_hundred_percent():
+
+    result = is_user_in_rollout(
+        user_id="anitha",
+        flag_key="new_dashboard",
+        rollout_percentage=100
+    )
+
+    assert result is True
+
+
+def test_rollout_consistency():
+
+    first = is_user_in_rollout(
+        user_id="tester01",
+        flag_key="payment",
+        rollout_percentage=50
+    )
+
+    second = is_user_in_rollout(
+        user_id="tester01",
+        flag_key="payment",
+        rollout_percentage=50
+    )
+
+    assert first == second
+
+
+def test_rollout_returns_boolean():
+
+    result = is_user_in_rollout(
+        user_id="user123",
+        flag_key="login",
+        rollout_percentage=40
+    )
+
+    assert isinstance(result, bool)

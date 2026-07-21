@@ -40,3 +40,46 @@ def update_flag(db: Session, key: str, flag: FlagUpdate):
     db.refresh(db_flag)
 
     return db_flag
+
+def get_rollout_percentage(db, flag_key):
+
+    flag = (
+        db.query(Flag)
+        .filter(Flag.key == flag_key)
+        .first()
+    )
+
+    if not flag:
+        return None
+
+    return {
+        "flag_key": flag.key,
+        "rollout_percentage": flag.rollout_percentage
+    }
+
+
+def update_rollout_percentage(
+    db,
+    flag_key,
+    rollout_percentage
+):
+
+    flag = (
+        db.query(Flag)
+        .filter(Flag.key == flag_key)
+        .first()
+    )
+
+    if not flag:
+        return None
+
+    flag.rollout_percentage = rollout_percentage
+
+    db.commit()
+
+    db.refresh(flag)
+
+    return {
+        "flag_key": flag.key,
+        "rollout_percentage": flag.rollout_percentage
+    }

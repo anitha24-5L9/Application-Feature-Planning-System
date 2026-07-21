@@ -15,6 +15,8 @@ class Flag(Base):
 
     enabled = Column(Boolean, default=True)
 
+    rollout_percentage = Column(Integer, default=0)
+
     description = Column(String)
 
     owner_team = Column(String, nullable=False)

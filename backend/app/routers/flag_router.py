@@ -2,12 +2,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
-from app.schemas.flag import FlagCreate, FlagUpdate, FlagResponse
+
+from app.schemas.flag import (
+    FlagCreate,
+    FlagUpdate,
+    FlagResponse,
+    RolloutUpdate,
+    RolloutResponse,
+)
 from app.services.flag_service import (
     get_flags,
     get_flag_by_key,
     create_flag,
     update_flag,
+    get_rollout_percentage,
+    update_rollout_percentage,
 )
 
 router = APIRouter(prefix="/flags", tags=["Flags"])
@@ -57,3 +66,35 @@ def edit_flag(key: str, flag: FlagUpdate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Flag not found")
 
     return updated
+@router.get("/{key}/rollout", response_model=RolloutResponse)
+def read_rollout(key: str, db: Session = Depends(get_db)):
+
+    result = get_rollout_percentage(db, key)
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Flag not found"
+        )
+
+    return result
+@router.put("/{key}/rollout", response_model=RolloutResponse)
+def edit_rollout(
+    key: str,
+    rollout: RolloutUpdate,
+    db: Session = Depends(get_db)
+):
+
+    result = update_rollout_percentage(
+        db,
+        key,
+        rollout.rollout_percentage
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Flag not found"
+        )
+
+    return result

@@ -1,3 +1,4 @@
+import hashlib
 from sqlalchemy.orm import Session
 
 from app.models.flag import Flag
@@ -10,6 +11,32 @@ VALID_ENVIRONMENTS = [
     "production"
 ]
 
+def is_user_in_rollout(
+    user_id: str,
+    flag_key: str,
+    rollout_percentage: int
+):
+    """
+    Returns True if the user belongs to the rollout percentage.
+    Uses deterministic hashing so the same user always gets
+    the same bucket for the same feature flag.
+    """
+
+    if rollout_percentage <= 0:
+        return False
+
+    if rollout_percentage >= 100:
+        return True
+
+    value = f"{user_id}:{flag_key}"
+
+    hash_value = hashlib.sha256(
+        value.encode("utf-8")
+    ).hexdigest()
+
+    bucket = int(hash_value, 16) % 100
+
+    return bucket < rollout_percentage
 
 def evaluate_flag(
     db: Session,
@@ -117,6 +144,30 @@ def evaluate_flag(
                     "environment": environment,
                     "enabled": True
                 }
+
+    # -----------------------------
+    # Day 9 - Percentage Rollout
+    # -----------------------------
+    if user_id:
+
+        if is_user_in_rollout(
+            user_id=user_id,
+            flag_key=flag.key,
+            rollout_percentage=flag.rollout_percentage
+        ):
+            return {
+                "success": True,
+                "flag": flag.key,
+                "environment": environment,
+                "enabled": True
+            }
+
+        return {
+            "success": True,
+            "flag": flag.key,
+            "environment": environment,
+            "enabled": False
+        }
 
     # -----------------------------
     # Default Evaluation

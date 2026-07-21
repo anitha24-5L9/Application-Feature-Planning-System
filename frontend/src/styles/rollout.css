@@ -1,0 +1,53 @@
+.rollout-card {
+
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    margin-bottom: 30px;
+
+}
+
+.rollout-slider {
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    margin-bottom: 15px;
+
+}
+
+.rollout-label {
+
+    font-size: 18px;
+
+    margin-bottom: 20px;
+
+}
+
+.rollout-button {
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    padding: 10px 20px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+}
+
+.rollout-button:hover {
+
+    background: #1d4ed8;
+
+}

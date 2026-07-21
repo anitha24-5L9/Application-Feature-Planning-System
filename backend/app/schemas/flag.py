@@ -9,6 +9,8 @@ class FlagBase(BaseModel):
     enabled: bool
     description: Optional[str] = None
     owner_team: str
+    enabled: bool
+    rollout_percentage: int = 0
 
 
 class FlagCreate(FlagBase):
@@ -21,6 +23,9 @@ class FlagUpdate(BaseModel):
     enabled: Optional[bool] = None
     description: Optional[str] = None
     owner_team: Optional[str] = None
+    enabled: Optional[bool] = None
+    rollout_percentage: Optional[int] = None
+
 
 
 class FlagResponse(FlagBase):
@@ -29,3 +34,11 @@ class FlagResponse(FlagBase):
     model_config = ConfigDict(
     from_attributes=True
 )
+    
+class RolloutUpdate(BaseModel):
+    rollout_percentage: int
+
+
+class RolloutResponse(BaseModel):
+    flag_key: str
+    rollout_percentage: int

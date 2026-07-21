@@ -127,3 +127,36 @@ export async function removeTargetGroup(flagKey, groupName) {
 
   return response.json();
 }
+
+export async function getRolloutPercentage(flagKey) {
+  const response = await fetch(
+    `${API_URL}/flags/${flagKey}/rollout`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch rollout percentage");
+  }
+
+  return response.json();
+}
+
+export async function updateRolloutPercentage(flagKey, percentage) {
+  const response = await fetch(
+    `${API_URL}/flags/${flagKey}/rollout`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        rollout_percentage: percentage,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update rollout percentage");
+  }
+
+  return response.json();
+}
