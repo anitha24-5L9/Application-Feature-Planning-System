@@ -4,6 +4,9 @@ from sqlalchemy.orm import Session
 from app.models.flag import Flag
 from app.models.targeting_rule import TargetingRule
 from app.models.user_group_membership import UserGroupMembership
+from app.models.environment import Environment
+from app.models.environment_override import EnvironmentOverride
+
 
 VALID_ENVIRONMENTS = [
     "development",
@@ -11,17 +14,12 @@ VALID_ENVIRONMENTS = [
     "production"
 ]
 
+
 def is_user_in_rollout(
     user_id: str,
     flag_key: str,
     rollout_percentage: int
 ):
-    """
-    Returns True if the user belongs to the rollout percentage.
-    Uses deterministic hashing so the same user always gets
-    the same bucket for the same feature flag.
-    """
-
     if rollout_percentage <= 0:
         return False
 
@@ -37,6 +35,7 @@ def is_user_in_rollout(
     bucket = int(hash_value, 16) % 100
 
     return bucket < rollout_percentage
+
 
 def evaluate_flag(
     db: Session,
@@ -72,11 +71,12 @@ def evaluate_flag(
     # -----------------------------
     if not flag.enabled:
         return {
-            "success": True,
-            "flag": flag.key,
-            "environment": environment,
-            "enabled": False
-        }
+    "success": True,
+    "flag": flag.key,
+    "environment": environment,
+    "enabled": False,
+    "reason": "Flag Disabled"
+}
 
     # -----------------------------
     # User Context
@@ -87,7 +87,7 @@ def evaluate_flag(
         user_id = user_context.get("user_id")
 
     # -----------------------------
-    # Day 7 - User Targeting Rule
+    # Day 7 - User Targeting
     # -----------------------------
     if user_id:
 
@@ -102,14 +102,15 @@ def evaluate_flag(
 
         if targeted_user:
             return {
-                "success": True,
-                "flag": flag.key,
-                "environment": environment,
-                "enabled": True
-            }
+        "success": True,
+        "flag": flag.key,
+        "environment": environment,
+        "enabled": True,
+        "reason": "User Targeting"
+    }
 
     # -----------------------------
-    # Day 8 - Group Targeting Rule
+    # Day 8 - Group Targeting
     # -----------------------------
     if user_id:
 
@@ -139,11 +140,12 @@ def evaluate_flag(
 
             if targeted_group:
                 return {
-                    "success": True,
-                    "flag": flag.key,
-                    "environment": environment,
-                    "enabled": True
-                }
+        "success": True,
+        "flag": flag.key,
+        "environment": environment,
+        "enabled": True,
+        "reason": "Group Targeting"
+    }
 
     # -----------------------------
     # Day 9 - Percentage Rollout
@@ -156,25 +158,51 @@ def evaluate_flag(
             rollout_percentage=flag.rollout_percentage
         ):
             return {
-                "success": True,
-                "flag": flag.key,
-                "environment": environment,
-                "enabled": True
-            }
-
-        return {
-            "success": True,
-            "flag": flag.key,
-            "environment": environment,
-            "enabled": False
-        }
-
-    # -----------------------------
-    # Default Evaluation
-    # -----------------------------
-    return {
         "success": True,
         "flag": flag.key,
         "environment": environment,
-        "enabled": flag.enabled
+        "enabled": True,
+        "reason": "Percentage Rollout"
     }
+
+    # -----------------------------
+    # Day 10 - Environment Override
+    # -----------------------------
+    environment_obj = (
+        db.query(Environment)
+        .filter(
+            Environment.name == environment.lower()
+        )
+        .first()
+    )
+
+    if environment_obj:
+
+        override = (
+            db.query(EnvironmentOverride)
+            .filter(
+                EnvironmentOverride.flag_id == flag.id,
+                EnvironmentOverride.environment_id == environment_obj.id
+            )
+            .first()
+        )
+
+        if override:
+            return {
+        "success": True,
+        "flag": flag.key,
+        "environment": environment,
+        "enabled": override.override_value,
+        "reason": "Environment Override"
+    }
+
+    # -----------------------------
+    # Default Value
+    # -----------------------------
+    return {
+    "success": True,
+    "flag": flag.key,
+    "environment": environment,
+    "enabled": flag.default_value,
+    "reason": "Default Value"
+}
