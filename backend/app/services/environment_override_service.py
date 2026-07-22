@@ -74,6 +74,9 @@ def get_overrides(db: Session, flag_key: str):
             Environment.id == item.environment_id
         ).first()
 
+        if not environment:
+            continue
+
         result.append(
             {
                 "id": item.id,
