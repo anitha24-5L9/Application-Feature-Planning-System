@@ -270,3 +270,25 @@ export async function saveEnvironmentOverride(data) {
 
   return result;
 }
+
+// ==========================================
+// Evaluation API
+// ==========================================
+
+export async function evaluateFlag(data) {
+  const response = await fetch(`${API_URL}/evaluate/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.detail || "Evaluation failed");
+  }
+
+  return result;
+}

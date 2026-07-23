@@ -9,6 +9,7 @@ import {
   getFlag,
   getRolloutPercentage,
   updateRolloutPercentage,
+  evaluateFlag,
 } from "../services/api";
 
 function FlagDetail() {
@@ -17,6 +18,9 @@ function FlagDetail() {
 
     const [flag, setFlag] = useState(null);
     const [rollout, setRollout] = useState(0);
+    const [environment, setEnvironment] = useState("development");
+    const [userId, setUserId] = useState("");
+    const [evaluationResult, setEvaluationResult] = useState(null);
 
     useEffect(() => {
         loadFlag();
@@ -53,6 +57,23 @@ setRollout(rolloutData.rollout_percentage);
   }
 
 }
+async function evaluateFeature() {
+  try {
+    const result = await evaluateFlag({
+      flag_key: flag.key,
+      environment: environment,
+      user_context: {
+        user_id: userId,
+      },
+    });
+
+    setEvaluationResult(result);
+  } catch (error) {
+    console.error(error);
+    alert("Evaluation failed");
+  }
+}
+
 
     if (!flag) {
         return <h2>Loading...</h2>;
@@ -131,7 +152,7 @@ setRollout(rolloutData.rollout_percentage);
     <br></br>
     <br></br>
 
-    <div className="rollout-card">
+    <div className="evaluation-card">
 
   <h2>Percentage Rollout</h2>
 
@@ -158,6 +179,89 @@ setRollout(rolloutData.rollout_percentage);
 </div>
 
 <br />
+<br />
+<br />
+
+<div className="rollout-card">
+
+  <h2>Evaluation Test Panel</h2>
+
+  <label className="evaluation-label">
+    Environment
+</label>
+
+  <select
+    className="evaluation-select"
+    value={environment}
+    onChange={(e) => setEnvironment(e.target.value)}
+    
+  >
+    <option value="development">Development</option>
+    <option value="staging">Staging</option>
+    <option value="production">Production</option>
+  </select>
+
+  <br />
+  <br />
+
+  <label className="evaluation-label">
+    User ID
+</label>
+
+  <input
+    className="evaluation-input"
+    type="text"
+    placeholder="Enter User ID"
+    value={userId}
+    onChange={(e) => setUserId(e.target.value)}
+    
+  />
+
+  <br />
+  <br />
+
+  <button
+    className="evaluation-button"
+    onClick={evaluateFeature}
+  >
+    Evaluate
+  </button>
+
+  {
+    evaluationResult && (
+
+      <div className="evaluation-result">
+
+        <h3>Evaluation Result</h3>
+
+        <p className="result-item">
+    <strong>Enabled:</strong>{" "}
+    <span
+        className={
+            evaluationResult.enabled
+                ? "result-enabled"
+                : "result-disabled"
+        }
+    >
+        {String(evaluationResult.enabled)}
+    </span>
+</p>
+
+        <p className="result-item">
+    <strong>Reason:</strong> {evaluationResult.reason}
+</p>
+
+<p className="result-item">
+    <strong>Matched Rule:</strong>{" "}
+    {evaluationResult.matched_rule || "-"}
+</p>
+
+      </div>
+
+    )
+  }
+
+</div>
 
 
   </div>

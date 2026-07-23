@@ -75,7 +75,8 @@ def evaluate_flag(
     "flag": flag.key,
     "environment": environment,
     "enabled": False,
-    "reason": "Flag Disabled"
+    "reason": "Flag Disabled",
+    "matched_rule": "Feature flag is disabled"
 }
 
     # -----------------------------
@@ -102,12 +103,13 @@ def evaluate_flag(
 
         if targeted_user:
             return {
-        "success": True,
-        "flag": flag.key,
-        "environment": environment,
-        "enabled": True,
-        "reason": "User Targeting"
-    }
+    "success": True,
+    "flag": flag.key,
+    "environment": environment,
+    "enabled": True,
+    "reason": "User Targeting",
+    "matched_rule": f"User ID: {user_id}"
+}
 
     # -----------------------------
     # Day 8 - Group Targeting
@@ -140,12 +142,13 @@ def evaluate_flag(
 
             if targeted_group:
                 return {
-        "success": True,
-        "flag": flag.key,
-        "environment": environment,
-        "enabled": True,
-        "reason": "Group Targeting"
-    }
+    "success": True,
+    "flag": flag.key,
+    "environment": environment,
+    "enabled": True,
+    "reason": "Group Targeting",
+    "matched_rule": f"Groups: {', '.join(user_groups)}"
+}
 
     # -----------------------------
     # Day 9 - Percentage Rollout
@@ -158,12 +161,13 @@ def evaluate_flag(
             rollout_percentage=flag.rollout_percentage
         ):
             return {
-        "success": True,
-        "flag": flag.key,
-        "environment": environment,
-        "enabled": True,
-        "reason": "Percentage Rollout"
-    }
+    "success": True,
+    "flag": flag.key,
+    "environment": environment,
+    "enabled": True,
+    "reason": "Percentage Rollout",
+    "matched_rule": f"Rollout: {flag.rollout_percentage}%"
+}
 
     # -----------------------------
     # Day 10 - Environment Override
@@ -189,12 +193,13 @@ def evaluate_flag(
 
         if override:
             return {
-        "success": True,
-        "flag": flag.key,
-        "environment": environment,
-        "enabled": override.override_value,
-        "reason": "Environment Override"
-    }
+    "success": True,
+    "flag": flag.key,
+    "environment": environment,
+    "enabled": override.override_value,
+    "reason": "Environment Override",
+    "matched_rule": f"Environment: {environment.lower()}"
+}
 
     # -----------------------------
     # Default Value
@@ -204,5 +209,6 @@ def evaluate_flag(
     "flag": flag.key,
     "environment": environment,
     "enabled": flag.default_value,
-    "reason": "Default Value"
+    "reason": "Default Value",
+    "matched_rule": "No targeting rule matched"
 }
