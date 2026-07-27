@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.flag import Flag
 from app.models.targeting_rule import TargetingRule
+from app.cache.redis_client import clear_flag_cache
 
 
 # ---------------------------------
@@ -39,6 +40,8 @@ def add_target_user(db: Session, flag_key: str, user_id: str):
     db.add(rule)
     db.commit()
     db.refresh(rule)
+
+    clear_flag_cache(flag.key)
 
     return rule
 
@@ -90,6 +93,8 @@ def delete_target_user(db: Session, flag_key: str, user_id: str):
     db.delete(rule)
     db.commit()
 
+    clear_flag_cache(flag.key)
+
     return True
 
 
@@ -128,6 +133,8 @@ def add_target_group(db: Session, data):
     db.add(rule)
     db.commit()
     db.refresh(rule)
+
+    clear_flag_cache(flag.key)
 
     return rule
 
@@ -178,5 +185,7 @@ def remove_target_group(db: Session, flag_key: str, group_name: str):
 
     db.delete(rule)
     db.commit()
+
+    clear_flag_cache(flag.key)
 
     return True

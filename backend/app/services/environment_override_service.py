@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.flag import Flag
 from app.models.environment import Environment
 from app.models.environment_override import EnvironmentOverride
+from app.cache.redis_client import clear_flag_cache
 
 
 def create_or_update_override(
@@ -42,15 +43,18 @@ def create_or_update_override(
 
         db.add(override)
 
-    db.commit()
-    db.refresh(override)
+        db.commit()
+        db.refresh(override)
 
-    return {
-        "id": override.id,
-        "flag_key": flag.key,
-        "environment_name": environment.name,
-        "override_value": override.override_value,
-    }
+        # Clear Redis cache for this flag
+        clear_flag_cache(flag.key)
+
+        return {
+            "id": override.id,
+            "flag_key": flag.key,
+            "environment_name": environment.name,
+            "override_value": override.override_value,
+        }
 
 
 def get_overrides(db: Session, flag_key: str):

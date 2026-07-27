@@ -21,6 +21,7 @@ function FlagDetail() {
     const [environment, setEnvironment] = useState("development");
     const [userId, setUserId] = useState("");
     const [evaluationResult, setEvaluationResult] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         loadFlag();
@@ -58,7 +59,11 @@ setRollout(rolloutData.rollout_percentage);
 
 }
 async function evaluateFeature() {
+
   try {
+
+    setLoading(true);
+
     const result = await evaluateFlag({
       flag_key: flag.key,
       environment: environment,
@@ -68,10 +73,19 @@ async function evaluateFeature() {
     });
 
     setEvaluationResult(result);
+
+    setLoading(false);
+
   } catch (error) {
+
     console.error(error);
+
+    setLoading(false);
+
     alert("Evaluation failed");
+
   }
+
 }
 
 
@@ -223,9 +237,10 @@ async function evaluateFeature() {
   <button
     className="evaluation-button"
     onClick={evaluateFeature}
-  >
-    Evaluate
-  </button>
+    disabled={loading}
+>
+    {loading ? "Evaluating..." : "Evaluate"}
+</button>
 
   {
     evaluationResult && (
@@ -254,6 +269,20 @@ async function evaluateFeature() {
 <p className="result-item">
     <strong>Matched Rule:</strong>{" "}
     {evaluationResult.matched_rule || "-"}
+</p>
+<p className="result-item">
+    <strong>Source:</strong>{" "}
+
+    <span
+        className={
+            evaluationResult.source === "cache"
+                ? "cache-badge"
+                : "live-badge"
+        }
+    >
+        {evaluationResult.source}
+    </span>
+
 </p>
 
       </div>

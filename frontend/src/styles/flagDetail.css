@@ -14,6 +14,28 @@
     font-size: 30px;
     color: #0F172A;
 }
+.cache-badge{
+    background:#d1fae5;
+    color:#065f46;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.live-badge{
+    background:#dbeafe;
+    color:#1e40af;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.evaluation-button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
 
 
 

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.cache.redis_client import check_redis_connection
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database.database import Base, engine
@@ -22,6 +23,9 @@ app = FastAPI(
     title="Application Feature Planning and Release Governance System",
     version="1.0.0"
 )
+
+# Check Redis when the application starts
+check_redis_connection()
 
 # Register Routers
 app.include_router(flag_router)

@@ -172,6 +172,9 @@ def test_multiple_environment_values(db):
     ])
 
     db.commit()
+    from app.cache.redis_client import clear_flag_cache
+
+    clear_flag_cache(flag.key)
 
 
     dev_result = evaluate_flag(

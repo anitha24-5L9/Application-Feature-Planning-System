@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.flag import Flag
 from app.schemas.flag import FlagCreate, FlagUpdate
+from app.cache.redis_client import clear_flag_cache
 
 
 def get_flags(db: Session):
@@ -38,6 +39,7 @@ def update_flag(db: Session, key: str, flag: FlagUpdate):
 
     db.commit()
     db.refresh(db_flag)
+    clear_flag_cache(flag.key)
 
     return db_flag
 
@@ -78,6 +80,7 @@ def update_rollout_percentage(
     db.commit()
 
     db.refresh(flag)
+    clear_flag_cache(flag.key)
 
     return {
         "flag_key": flag.key,

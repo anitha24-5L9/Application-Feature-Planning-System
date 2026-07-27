@@ -1,6 +1,8 @@
 import hashlib
 from sqlalchemy.orm import Session
 
+from app.cache.redis_client import get_cache, set_cache
+
 from app.models.flag import Flag
 from app.models.targeting_rule import TargetingRule
 from app.models.user_group_membership import UserGroupMembership
@@ -37,12 +39,36 @@ def is_user_in_rollout(
     return bucket < rollout_percentage
 
 
+def cache_and_return(cache_key: str, response: dict):
+    """
+    Save response in Redis and return it.
+    Error responses are not cached.
+    """
+    if response.get("success"):
+        response["source"] = "live"
+        set_cache(cache_key, response)
+
+    return response
+
+
 def evaluate_flag(
     db: Session,
     flag_key: str,
     environment: str,
     user_context: dict | None = None
 ):
+    if user_context is None:
+        user_context = {}
+
+    user_id = user_context.get("user_id", "anonymous")
+
+    cache_key = f"{flag_key}:{environment}:{user_id}"
+
+    cached_result = get_cache(cache_key)
+
+    if cached_result:
+        cached_result["source"] = "cache"
+        return cached_result
 
     # -----------------------------
     # Validate Environment
@@ -70,14 +96,17 @@ def evaluate_flag(
     # Disabled Flag
     # -----------------------------
     if not flag.enabled:
-        return {
-    "success": True,
-    "flag": flag.key,
-    "environment": environment,
-    "enabled": False,
-    "reason": "Flag Disabled",
-    "matched_rule": "Feature flag is disabled"
-}
+        return cache_and_return(
+            cache_key,
+            {
+                "success": True,
+                "flag": flag.key,
+                "environment": environment,
+                "enabled": False,
+                "reason": "Flag Disabled",
+                "matched_rule": "Feature flag is disabled"
+            }
+        )
 
     # -----------------------------
     # User Context
@@ -102,14 +131,17 @@ def evaluate_flag(
         )
 
         if targeted_user:
-            return {
-    "success": True,
-    "flag": flag.key,
-    "environment": environment,
-    "enabled": True,
-    "reason": "User Targeting",
-    "matched_rule": f"User ID: {user_id}"
-}
+            return cache_and_return(
+                cache_key,
+                {
+                    "success": True,
+                    "flag": flag.key,
+                    "environment": environment,
+                    "enabled": True,
+                    "reason": "User Targeting",
+                    "matched_rule": f"User ID: {user_id}"
+                }
+            )
 
     # -----------------------------
     # Day 8 - Group Targeting
@@ -141,14 +173,17 @@ def evaluate_flag(
             )
 
             if targeted_group:
-                return {
-    "success": True,
-    "flag": flag.key,
-    "environment": environment,
-    "enabled": True,
-    "reason": "Group Targeting",
-    "matched_rule": f"Groups: {', '.join(user_groups)}"
-}
+                return cache_and_return(
+                    cache_key,
+                    {
+                        "success": True,
+                        "flag": flag.key,
+                        "environment": environment,
+                        "enabled": True,
+                        "reason": "Group Targeting",
+                        "matched_rule": f"Groups: {', '.join(user_groups)}"
+                    }
+                )
 
     # -----------------------------
     # Day 9 - Percentage Rollout
@@ -160,14 +195,17 @@ def evaluate_flag(
             flag_key=flag.key,
             rollout_percentage=flag.rollout_percentage
         ):
-            return {
-    "success": True,
-    "flag": flag.key,
-    "environment": environment,
-    "enabled": True,
-    "reason": "Percentage Rollout",
-    "matched_rule": f"Rollout: {flag.rollout_percentage}%"
-}
+            return cache_and_return(
+                cache_key,
+                {
+                    "success": True,
+                    "flag": flag.key,
+                    "environment": environment,
+                    "enabled": True,
+                    "reason": "Percentage Rollout",
+                    "matched_rule": f"Rollout: {flag.rollout_percentage}%"
+                }
+            )
 
     # -----------------------------
     # Day 10 - Environment Override
@@ -192,23 +230,29 @@ def evaluate_flag(
         )
 
         if override:
-            return {
-    "success": True,
-    "flag": flag.key,
-    "environment": environment,
-    "enabled": override.override_value,
-    "reason": "Environment Override",
-    "matched_rule": f"Environment: {environment.lower()}"
-}
+            return cache_and_return(
+                cache_key,
+                {
+                    "success": True,
+                    "flag": flag.key,
+                    "environment": environment,
+                    "enabled": override.override_value,
+                    "reason": "Environment Override",
+                    "matched_rule": f"Environment: {environment.lower()}"
+                }
+            )
 
     # -----------------------------
     # Default Value
     # -----------------------------
-    return {
-    "success": True,
-    "flag": flag.key,
-    "environment": environment,
-    "enabled": flag.default_value,
-    "reason": "Default Value",
-    "matched_rule": "No targeting rule matched"
-}
+    return cache_and_return(
+        cache_key,
+        {
+            "success": True,
+            "flag": flag.key,
+            "environment": environment,
+            "enabled": flag.default_value,
+            "reason": "Default Value",
+            "matched_rule": "No targeting rule matched"
+        }
+    )
