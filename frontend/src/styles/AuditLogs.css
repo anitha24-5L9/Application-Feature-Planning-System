@@ -1,0 +1,116 @@
+.audit-container {
+    padding: 30px;
+}
+
+.audit-container h2 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 30px;
+}
+
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 8px 24px rgba(0,0,0,0.08);
+}
+
+.audit-table thead {
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #1d4ed8
+    );
+}
+
+.audit-table thead th {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px;
+}
+
+.audit-table td {
+    padding: 16px;
+    border-bottom: 1px solid #ececec;
+    color: #374151;
+    font-size: 15px;
+}
+
+.audit-table tbody tr {
+    transition: all 0.25s ease;
+}
+
+.audit-table tbody tr:hover {
+    background: #f8fbff;
+    transform: scale(1.003);
+}
+
+.audit-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.diff-btn {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.diff-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 18px rgba(37,99,235,0.35);
+}
+
+.diff-btn:active {
+    transform: scale(0.96);
+}
+
+@media (max-width:900px){
+
+.audit-table{
+    display:block;
+    overflow-x:auto;
+}
+
+.audit-container h2{
+    font-size:26px;
+}
+
+}
+
+.action-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rollout {
+    background: #3b82f6;
+}
+
+.environment {
+    background: #8b5cf6;
+}
+
+.targeting {
+    background: #10b981;
+}
