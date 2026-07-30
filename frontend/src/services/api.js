@@ -23,7 +23,6 @@ export async function getFlag(key) {
 
   return response.json();
 }
-
 export async function createFlag(flag) {
   const response = await fetch(`${API_URL}/flags/`, {
     method: "POST",
@@ -42,6 +41,23 @@ export async function createFlag(flag) {
   return data;
 }
 
+export async function updateFlag(key, flag) {
+  const response = await fetch(`${API_URL}/flags/${key}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(flag),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to update flag");
+  }
+
+  return data;
+}
 // ==========================================
 // Target User APIs
 // ==========================================

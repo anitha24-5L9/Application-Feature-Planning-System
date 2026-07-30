@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-function FlagTable({ flags }) {
+function FlagTable({
+  flags,
+  onEdit
+}) {
   return (
     <table className="flag-table">
 
@@ -14,6 +17,7 @@ function FlagTable({ flags }) {
           <th>Status</th>
 
           <th>Owner Team</th>
+          <th>Actions</th>
 
         </tr>
 
@@ -74,6 +78,18 @@ function FlagTable({ flags }) {
                 {flag.owner_team}
 
               </td>
+              <td>
+
+<button
+className="edit-btn"
+onClick={() => onEdit(flag)}
+>
+
+✏ Edit
+
+</button>
+
+</td>
 
             </tr>
 
@@ -83,7 +99,7 @@ function FlagTable({ flags }) {
 
           <tr>
 
-            <td colSpan="4" className="empty-state">
+            <td colSpan="5" className="empty-state">
 
               No Feature Flags Found
 

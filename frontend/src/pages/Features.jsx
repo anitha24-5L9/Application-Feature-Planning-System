@@ -5,7 +5,11 @@ import AddFlagForm from "../components/AddFlagForm";
 import FlagTable from "../components/FlagTable";
 import FlagModal from "../components/FlagModal";
 
-import { getFlags, createFlag } from "../services/api";
+import {
+  getFlags,
+  createFlag,
+  updateFlag
+} from "../services/api";
 
 import "../styles/flag.css";
 
@@ -19,6 +23,7 @@ function Features() {
   const [open,setOpen]=useState(
   action === "create"
 );
+  const [editFlag, setEditFlag] = useState(null);
 
   useEffect(()=>{
 
@@ -49,6 +54,32 @@ async function loadFlags() {
     setOpen(false);
 
   }
+  async function handleUpdate(flag){
+
+  await updateFlag(flag.key, {
+
+    type: flag.type,
+    default_value: flag.default_value,
+    enabled: flag.enabled,
+    description: flag.description,
+    owner_team: flag.owner_team
+
+  });
+
+  await loadFlags();
+
+  setEditFlag(null);
+
+  setOpen(false);
+
+}
+function handleEdit(flag){
+
+  setEditFlag(flag);
+
+  setOpen(true);
+
+}
 
   const enabled=flags.filter(f=>f.enabled).length;
 
@@ -134,7 +165,13 @@ onClick={()=>setOpen(true)}
 
 </div>
 
-<FlagTable flags={flags}/>
+<FlagTable
+
+flags={flags}
+
+onEdit={handleEdit}
+
+/>
 
 </div>
 
@@ -149,6 +186,18 @@ onClose={()=>setOpen(false)}
 <AddFlagForm
 
 onAdd={handleAdd}
+
+onUpdate={handleUpdate}
+
+editFlag={editFlag}
+
+onCancel={() => {
+
+setEditFlag(null);
+
+setOpen(false);
+
+}}
 
 />
 

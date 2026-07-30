@@ -22,6 +22,8 @@ function FlagDetail() {
     const [userId, setUserId] = useState("");
     const [evaluationResult, setEvaluationResult] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState("whitelist");
+
 
     useEffect(() => {
         loadFlag();
@@ -160,13 +162,52 @@ async function evaluateFeature() {
     </div>
     <br></br>
     <br></br>
-    
+    <h2 className="section-title">
+    Targeting Rules
+</h2>
+<br></br>
+<div className="detail-tabs">
 
-    <TargetingPanel flagKey={flag.key} />
-    <br></br>
-    <br></br>
+  <button
+    className={activeTab === "whitelist" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("whitelist")}
+  >
+    👤 Whitelist
+  </button>
 
-    <div className="evaluation-card">
+  <button
+    className={activeTab === "groups" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("groups")}
+  >
+    👥 Group Targeting
+  </button>
+
+  <button
+    className={activeTab === "rollout" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("rollout")}
+  >
+    🎯 Rollout
+  </button>
+
+  <button
+    className={activeTab === "test" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("test")}
+  >
+    ⚡ Test Panel
+  </button>
+
+</div>
+
+{(activeTab === "whitelist" || activeTab === "groups") && (
+    <TargetingPanel
+        flagKey={flag.key}
+        activeTab={activeTab}
+    />
+)}
+
+    {activeTab === "rollout" && (
+
+<div className="evaluation-card">
 
   <h2>Percentage Rollout</h2>
 
@@ -192,9 +233,13 @@ async function evaluateFeature() {
 
 </div>
 
+)}
+
 <br />
 <br />
 <br />
+
+{activeTab === "test" && (
 
 <div className="rollout-card">
 
@@ -292,8 +337,9 @@ async function evaluateFeature() {
 
 </div>
 
+)}
 
-  </div>
+</div>
 );
 
 }

@@ -1,6 +1,10 @@
-import { useState } from "react";
-
-function AddFlagForm({ onAdd }) {
+import { useState, useEffect } from "react";
+function AddFlagForm({
+  onAdd,
+  onUpdate,
+  editFlag,
+  onCancel
+}) {
   const initialState = {
     key: "",
     owner_team: "",
@@ -12,6 +16,27 @@ function AddFlagForm({ onAdd }) {
 
   const [form, setForm] = useState(initialState);
 
+  useEffect(() => {
+
+  if (editFlag) {
+
+    setForm({
+      key: editFlag.key,
+      owner_team: editFlag.owner_team,
+      description: editFlag.description || "",
+      default_value: editFlag.default_value,
+      type: editFlag.type,
+      enabled: editFlag.enabled,
+    });
+
+  } else {
+
+    setForm(initialState);
+
+  }
+
+}, [editFlag]);
+
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
 
@@ -21,13 +46,23 @@ function AddFlagForm({ onAdd }) {
     });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+ function handleSubmit(e) {
+
+  e.preventDefault();
+
+  if (editFlag) {
+
+    onUpdate(form);
+
+  } else {
 
     onAdd(form);
 
     setForm(initialState);
+
   }
+
+}
 
   return (
     <form className="flag-form" onSubmit={handleSubmit}>
@@ -39,8 +74,9 @@ function AddFlagForm({ onAdd }) {
           <label>Feature Key</label>
 
           <input
-            type="text"
-            name="key"
+type="text"
+name="key"
+readOnly={!!editFlag}
             value={form.key}
             onChange={handleChange}
             placeholder="payment_gateway"
@@ -129,14 +165,28 @@ function AddFlagForm({ onAdd }) {
 
       <div className="button-row">
 
-        <button
-          className="primary-btn"
-          type="submit"
-        >
-          Create Feature
-        </button>
+<button
+className="primary-btn"
+type="submit"
+>
+{editFlag ? "Update Feature" : "Create Feature"}
+</button>
 
-      </div>
+{editFlag && (
+
+<button
+type="button"
+className="secondary-btn"
+onClick={onCancel}
+>
+
+Cancel
+
+</button>
+
+)}
+
+</div>
 
     </form>
   );

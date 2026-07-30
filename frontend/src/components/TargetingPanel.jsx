@@ -11,7 +11,8 @@ import {
 
 import "../styles/targeting.css";
 
-export default function TargetingPanel({ flagKey }) {
+export default function TargetingPanel({ flagKey, activeTab }) {
+
   // User Targeting State
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
@@ -84,109 +85,120 @@ export default function TargetingPanel({ flagKey }) {
 
       <h3>Targeting Rules</h3>
 
-      {/* User Targeting */}
+      {activeTab === "whitelist" && (
+        <>
 
-      <div className="target-input">
+          {/* User Targeting */}
 
-        <input
-          placeholder="Enter User ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
+          <div className="target-input">
 
-        <button onClick={handleAdd}>
-          Add User
-        </button>
+            <input
+              placeholder="Enter User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+            />
 
-      </div>
+            <button onClick={handleAdd}>
+              Add User
+            </button>
 
-      <div className="target-list">
+          </div>
 
-        {users.length === 0 ? (
-          <p className="empty">
-            No targeted users.
-          </p>
-        ) : (
-          users.map((user) => (
-            <div
-              className="target-item"
-              key={user.user_id}
+          <div className="target-list">
+
+            {users.length === 0 ? (
+              <p className="empty">
+                No targeted users.
+              </p>
+            ) : (
+              users.map((user) => (
+                <div
+                  className="target-item"
+                  key={user.user_id}
+                >
+                  <span>{user.user_id}</span>
+
+                  <button
+                    onClick={() => handleDelete(user.user_id)}
+                  >
+                    Remove
+                  </button>
+
+                </div>
+              ))
+            )}
+
+          </div>
+
+        </>
+      )}
+
+      {activeTab === "groups" && (
+        <>
+
+          <hr />
+
+          <br />
+          <br />
+
+          <h3>Group Targeting</h3>
+
+          <div className="group-controls">
+
+            <select
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
             >
-              <span>{user.user_id}</span>
 
-              <button
-                onClick={() => handleDelete(user.user_id)}
-              >
-                Remove
-              </button>
+              <option value="">
+                Select Group
+              </option>
 
-            </div>
-          ))
-        )}
+              {availableGroups.map((group) => (
+                <option
+                  key={group}
+                  value={group}
+                >
+                  {group}
+                </option>
+              ))}
 
-      </div>
+            </select>
 
-      <hr />
+            <button onClick={handleAddGroup}>
+              Add Group
+            </button>
 
-      {/* Group Targeting */}
-      <br></br>
-      <br></br>
+          </div>
 
-      <h3>Group Targeting</h3>
+          <ul className="group-list">
 
-      <div className="group-controls">
+            {groups.length === 0 ? (
+              <p className="empty">
+                No targeted groups.
+              </p>
+            ) : (
+              groups.map((group) => (
+                <li key={group.group_name}>
 
-        <select
-          value={selectedGroup}
-          onChange={(e) => setSelectedGroup(e.target.value)}
-        >
+                  <span>{group.group_name}</span>
 
-          <option value="">
-            Select Group
-          </option>
+                  <button
+                    onClick={() =>
+                      handleRemoveGroup(group.group_name)
+                    }
+                  >
+                    Remove
+                  </button>
 
-          {availableGroups.map((group) => (
-            <option
-              key={group}
-              value={group}
-            >
-              {group}
-            </option>
-          ))}
+                </li>
+              ))
+            )}
 
-        </select>
+          </ul>
 
-        <button onClick={handleAddGroup}>
-          Add Group
-        </button>
-
-      </div>
-
-      <ul className="group-list">
-
-        {groups.length === 0 ? (
-          <p className="empty">
-            No targeted groups.
-          </p>
-        ) : (
-          groups.map((group) => (
-            <li key={group.group_name}>
-
-              <span>{group.group_name}</span>
-
-              <button
-                onClick={() =>
-                  handleRemoveGroup(group.group_name)
-                }
-              >
-                Remove
-              </button>
-
-            </li>
-          ))
-        )}
-
-      </ul>
+        </>
+      )}
 
     </div>
   );
