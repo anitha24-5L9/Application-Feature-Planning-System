@@ -6,13 +6,22 @@ import App from "./App";
 import "./index.css";
 
 import { EnvironmentProvider } from "./context/EnvironmentContext";
+import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <EnvironmentProvider>
-        <App />
-      </EnvironmentProvider>
-    </BrowserRouter>
+
+  <AuthProvider>
+
+    <EnvironmentProvider>
+
+      <App />
+
+    </EnvironmentProvider>
+
+  </AuthProvider>
+
+</BrowserRouter>
   </React.StrictMode>
 );

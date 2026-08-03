@@ -1,5 +1,16 @@
 const API_URL = "http://127.0.0.1:8000";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return {
+    "Content-Type": "application/json",
+    ...(token && {
+      Authorization: `Bearer ${token}`,
+    }),
+  };
+}
+
 // ==========================================
 // Feature Flag APIs
 // ==========================================
@@ -26,9 +37,7 @@ export async function getFlag(key) {
 export async function createFlag(flag) {
   const response = await fetch(`${API_URL}/flags/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(flag),
   });
 
@@ -44,9 +53,7 @@ export async function createFlag(flag) {
 export async function updateFlag(key, flag) {
   const response = await fetch(`${API_URL}/flags/${key}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(flag),
   });
 
@@ -58,6 +65,7 @@ export async function updateFlag(key, flag) {
 
   return data;
 }
+
 // ==========================================
 // Target User APIs
 // ==========================================
@@ -158,9 +166,7 @@ export async function updateRolloutPercentage(flagKey, percentage) {
     `${API_URL}/flags/${flagKey}/rollout`,
     {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         rollout_percentage: percentage,
       }),
@@ -193,9 +199,7 @@ export async function getEnvironments() {
 export async function createEnvironment(name) {
   const response = await fetch(`${API_URL}/environments/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       name,
     }),
@@ -215,9 +219,7 @@ export async function updateEnvironment(id, name) {
     `${API_URL}/environments/${id}`,
     {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         name,
       }),
@@ -238,6 +240,7 @@ export async function deleteEnvironment(id) {
     `${API_URL}/environments/${id}`,
     {
       method: "DELETE",
+      headers: getAuthHeaders(),
     }
   );
 
@@ -271,9 +274,7 @@ export async function saveEnvironmentOverride(data) {
     `${API_URL}/environment-overrides/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     }
   );
@@ -317,6 +318,7 @@ export async function syncAnalytics() {
     `${API_URL}/analytics/sync`,
     {
       method: "POST",
+      headers: getAuthHeaders(),
     }
   );
 

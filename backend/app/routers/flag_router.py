@@ -10,6 +10,7 @@ from app.schemas.flag import (
     RolloutUpdate,
     RolloutResponse,
 )
+
 from app.services.flag_service import (
     get_flags,
     get_flag_by_key,
@@ -19,7 +20,14 @@ from app.services.flag_service import (
     update_rollout_percentage,
 )
 
-router = APIRouter(prefix="/flags", tags=["Flags"])
+from app.services.auth import get_current_user
+from app.models.user import User
+
+
+router = APIRouter(
+    prefix="/flags",
+    tags=["Flags"]
+)
 
 
 def get_db():
@@ -31,23 +39,40 @@ def get_db():
 
 
 @router.get("/", response_model=list[FlagResponse])
-def read_flags(db: Session = Depends(get_db)):
+def read_flags(
+    db: Session = Depends(get_db)
+):
     return get_flags(db)
 
 
 @router.get("/{key}", response_model=FlagResponse)
-def read_flag(key: str, db: Session = Depends(get_db)):
+def read_flag(
+    key: str,
+    db: Session = Depends(get_db)
+):
     flag = get_flag_by_key(db, key)
 
     if not flag:
-        raise HTTPException(status_code=404, detail="Flag not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Flag not found"
+        )
 
     return flag
 
 
 @router.post("/", response_model=FlagResponse)
-def add_flag(flag: FlagCreate, db: Session = Depends(get_db)):
-    new_flag = create_flag(db, flag)
+def add_flag(
+    flag: FlagCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    new_flag = create_flag(
+        db,
+        flag,
+        current_user.name
+    )
 
     if not new_flag:
         raise HTTPException(
@@ -59,15 +84,34 @@ def add_flag(flag: FlagCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{key}", response_model=FlagResponse)
-def edit_flag(key: str, flag: FlagUpdate, db: Session = Depends(get_db)):
-    updated = update_flag(db, key, flag)
+def edit_flag(
+    key: str,
+    flag: FlagUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    updated = update_flag(
+        db,
+        key,
+        flag,
+        current_user.name
+    )
 
     if not updated:
-        raise HTTPException(status_code=404, detail="Flag not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Flag not found"
+        )
 
     return updated
+
+
 @router.get("/{key}/rollout", response_model=RolloutResponse)
-def read_rollout(key: str, db: Session = Depends(get_db)):
+def read_rollout(
+    key: str,
+    db: Session = Depends(get_db)
+):
 
     result = get_rollout_percentage(db, key)
 
@@ -78,17 +122,21 @@ def read_rollout(key: str, db: Session = Depends(get_db)):
         )
 
     return result
+
+
 @router.put("/{key}/rollout", response_model=RolloutResponse)
 def edit_rollout(
     key: str,
     rollout: RolloutUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     result = update_rollout_percentage(
         db,
         key,
-        rollout.rollout_percentage
+        rollout.rollout_percentage,
+        current_user.name
     )
 
     if result is None:
