@@ -1,0 +1,58 @@
+.analytics-container {
+
+    margin-top: 25px;
+
+    padding: 20px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    border: 1px solid #ddd;
+
+}
+
+
+.analytics-container h3 {
+
+    margin-bottom: 20px;
+
+    font-size: 20px;
+
+}
+
+
+.analytics-container p {
+
+    text-align: center;
+
+    padding: 30px;
+
+}
+.analytics-container {
+
+    width: 100%;
+
+}
+
+
+.analytics-container h3 {
+
+    font-size: 22px;
+
+    margin-bottom: 20px;
+
+    font-weight: 600;
+
+}
+
+
+.analytics-container p {
+
+    text-align: center;
+
+    padding: 40px;
+
+    color: #777;
+
+}

@@ -18,6 +18,7 @@ from app.routers.flag_router import router as flag_router
 from app.routers.evaluation import router as evaluation_router
 from app.routers.targeting_router import router as targeting_router
 from app.routers.environment_router import router as environment_router
+from app.routers.analytics_router import router as analytics_router
 
 app = FastAPI(
     title="Application Feature Planning and Release Governance System",
@@ -35,6 +36,7 @@ app.include_router(environment_router)
 app.include_router(environment_override_router)
 
 app.include_router(audit_router)
+app.include_router(analytics_router)
 
 # CORS Configuration
 app.add_middleware(

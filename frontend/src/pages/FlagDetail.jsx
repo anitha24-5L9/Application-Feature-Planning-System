@@ -2,6 +2,7 @@ import "./../styles/flagDetail.css";
 import "./../styles/rollout.css";
 
 import TargetingPanel from "../components/TargetingPanel";
+import EvaluationChart from "../components/EvaluationChart";
 
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -10,6 +11,7 @@ import {
   getRolloutPercentage,
   updateRolloutPercentage,
   evaluateFlag,
+  syncAnalytics,
 } from "../services/api";
 
 function FlagDetail() {
@@ -23,7 +25,7 @@ function FlagDetail() {
     const [evaluationResult, setEvaluationResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("whitelist");
-
+    const [chartRefresh, setChartRefresh] = useState(false);
 
     useEffect(() => {
         loadFlag();
@@ -66,25 +68,48 @@ async function evaluateFeature() {
 
     setLoading(true);
 
+
     const result = await evaluateFlag({
+
       flag_key: flag.key,
+
       environment: environment,
+
       user_context: {
         user_id: userId,
       },
+
     });
+
 
     setEvaluationResult(result);
 
+
+
+    // Sync Redis analytics to SQLite
+    await syncAnalytics();
+
+
+
+    // Refresh chart
+    setChartRefresh(prev => !prev);
+
+
+
     setLoading(false);
+
 
   } catch (error) {
 
+
     console.error(error);
+
 
     setLoading(false);
 
+
     alert("Evaluation failed");
+
 
   }
 
@@ -338,6 +363,20 @@ async function evaluateFeature() {
 </div>
 
 )}
+
+<br />
+<br />
+<br />
+
+<div className="detail-card">
+
+    <EvaluationChart
+    flagKey={flag.key}
+    refresh={chartRefresh}
+/>
+
+</div>
+
 
 </div>
 );

@@ -8,7 +8,7 @@ from app.models.targeting_rule import TargetingRule
 from app.models.user_group_membership import UserGroupMembership
 from app.models.environment import Environment
 from app.models.environment_override import EnvironmentOverride
-
+from app.services.analytics_service import AnalyticsService
 
 VALID_ENVIRONMENTS = [
     "development",
@@ -67,8 +67,13 @@ def evaluate_flag(
     cached_result = get_cache(cache_key)
 
     if cached_result:
+        # Count cached evaluation
+        AnalyticsService.record_evaluation(flag_key)
         cached_result["source"] = "cache"
         return cached_result
+
+
+
 
     # -----------------------------
     # Validate Environment
@@ -91,6 +96,8 @@ def evaluate_flag(
             "success": False,
             "message": "Feature flag not found"
         }
+    AnalyticsService.record_evaluation(flag_key)
+    
 
     # -----------------------------
     # Disabled Flag

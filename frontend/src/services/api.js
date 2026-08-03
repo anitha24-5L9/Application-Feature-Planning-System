@@ -308,3 +308,25 @@ export async function evaluateFlag(data) {
 
   return result;
 }
+// ==========================================
+// Analytics Sync API
+// ==========================================
+
+export async function syncAnalytics() {
+  const response = await fetch(
+    `${API_URL}/analytics/sync`,
+    {
+      method: "POST",
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.detail || "Analytics sync failed"
+    );
+  }
+
+  return result;
+}

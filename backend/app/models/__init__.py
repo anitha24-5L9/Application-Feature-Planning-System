@@ -5,3 +5,4 @@ from .targeting_rule import TargetingRule
 from .user_group_membership import UserGroupMembership
 from .audit_log import AuditLog
 from .environment_override import EnvironmentOverride
+from .evaluation_analytics import EvaluationAnalytics
