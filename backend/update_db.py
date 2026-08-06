@@ -25,6 +25,21 @@ add_column("audit_log", "flag_key", "TEXT")
 add_column("audit_log", "details", "TEXT")
 add_column("audit_log", "timestamp", "DATETIME")
 
+# -----------------------------
+# Day 17 Cleanup Tooling
+# -----------------------------
+add_column(
+    "flags",
+    "cleanup_status_since",
+    "DATETIME"
+)
+
+add_column(
+    "flags",
+    "cleanup_reviewed",
+    "BOOLEAN DEFAULT 0"
+)
+
 conn.commit()
 conn.close()
 

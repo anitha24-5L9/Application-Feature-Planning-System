@@ -5,6 +5,7 @@ from app.schemas.flag import FlagCreate, FlagUpdate
 from app.cache.redis_client import clear_flag_cache
 from app.services.audit_service import create_audit_log
 
+from app.services.cleanup_helper import update_cleanup_status
 
 def get_flags(db: Session):
     return db.query(Flag).all()
@@ -31,7 +32,11 @@ def create_flag(
 
     db_flag = Flag(**flag.model_dump())
 
+    # Day 17 Cleanup Lifecycle
+    update_cleanup_status(db_flag)
+
     db.add(db_flag)
+    
 
     db.commit()
 
@@ -85,6 +90,8 @@ def update_flag(
 
     for k, v in updates.items():
         setattr(db_flag, k, v)
+    # Day 17 Cleanup Lifecycle
+    update_cleanup_status(db_flag)
 
     db.commit()
 
@@ -159,6 +166,10 @@ def update_rollout_percentage(
     }
 
     flag.rollout_percentage = rollout_percentage
+
+    update_cleanup_status(flag)
+
+
 
     db.commit()
 

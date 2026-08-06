@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { getFlags } from "../services/api";
 import "../styles/dashboard.css";
 
+import CleanupSuggestions from "../components/CleanupSuggestions";
+
 import {
   PieChart,
   Pie,
@@ -582,11 +584,12 @@ API
 
 </div>
 
-
+<CleanupSuggestions />
 
 
 
 </div>
+
 
 
 );

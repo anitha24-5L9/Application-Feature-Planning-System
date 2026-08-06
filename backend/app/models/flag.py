@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from datetime import datetime
 from app.database.database import Base
 
 
@@ -20,3 +21,11 @@ class Flag(Base):
     description = Column(String)
 
     owner_team = Column(String, nullable=False)
+
+    # -------------------------
+    # Day 17 Cleanup Fields
+    # -------------------------
+
+    cleanup_status_since = Column(DateTime, default=datetime.utcnow)
+
+    cleanup_reviewed = Column(Boolean, default=False)

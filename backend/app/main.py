@@ -7,6 +7,8 @@ from app.models.environment_override import EnvironmentOverride
 from app.routers.environment_override_router import router as environment_override_router
 from app.routers.audit_router import router as audit_router
 
+from app.routers import cleanup_router
+
 # Import all models so SQLAlchemy creates the tables
 from app.models import *
 
@@ -39,6 +41,8 @@ app.include_router(environment_override_router)
 app.include_router(audit_router)
 app.include_router(analytics_router)
 app.include_router(auth_router)
+
+app.include_router(cleanup_router.router)
 
 # CORS Configuration
 app.add_middleware(

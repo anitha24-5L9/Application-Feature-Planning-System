@@ -332,3 +332,39 @@ export async function syncAnalytics() {
 
   return result;
 }
+
+// ==========================================
+// Cleanup Suggestions API
+// ==========================================
+
+export async function getCleanupSuggestions(days = 30) {
+  const response = await fetch(
+    `${API_URL}/cleanup/suggestions?days=${days}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load cleanup suggestions");
+  }
+
+  return response.json();
+}
+
+export async function markCleanupReviewed(flagKey) {
+  const response = await fetch(
+    `${API_URL}/cleanup/review/${flagKey}`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.detail || "Failed to review cleanup suggestion"
+    );
+  }
+
+  return result;
+}
