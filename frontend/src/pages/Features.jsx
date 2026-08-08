@@ -8,7 +8,7 @@ import FlagModal from "../components/FlagModal";
 import {
   getFlags,
   createFlag,
-  updateFlag
+  updateFlag,
 } from "../services/api";
 
 import "../styles/flag.css";
@@ -18,195 +18,198 @@ function Features() {
 
   const action = searchParams.get("action");
 
-  const [flags,setFlags]=useState([]);
-
-  const [open,setOpen]=useState(
-  action === "create"
-);
+  const [flags, setFlags] = useState([]);
+  const [open, setOpen] = useState(action === "create");
   const [editFlag, setEditFlag] = useState(null);
 
-  useEffect(()=>{
-
+  useEffect(() => {
     loadFlags();
+  }, []);
 
-  },[]);
+  async function loadFlags() {
+    console.log("loadFlags() called");
 
-async function loadFlags() {
-  console.log("loadFlags() called");
+    try {
+      const data = await getFlags();
 
-  try {
-    const data = await getFlags();
+      console.log("Received data:", data);
 
-    console.log("Received data:", data);
-
-    setFlags(data);
-  } catch (error) {
-    console.error("Error while loading flags:", error);
+      setFlags(data);
+    } catch (error) {
+      console.error("Error while loading flags:", error);
+    }
   }
-}
 
-  async function handleAdd(flag){
+  async function handleAdd(flag) {
+    try {
+      await createFlag(flag);
 
-    await createFlag(flag);
+      await loadFlags();
 
-    loadFlags();
+      setOpen(false);
+    } catch (error) {
+      console.error("Create feature failed:", error);
 
-    setOpen(false);
-
+      alert(error.message);
+    }
   }
-  async function handleUpdate(flag){
 
-  await updateFlag(flag.key, {
+  async function handleUpdate(flag) {
+    try {
+      await updateFlag(flag.key, {
+        type: flag.type,
+        default_value: flag.default_value,
+        enabled: flag.enabled,
+        description: flag.description,
+        owner_team: flag.owner_team,
+      });
 
-    type: flag.type,
-    default_value: flag.default_value,
-    enabled: flag.enabled,
-    description: flag.description,
-    owner_team: flag.owner_team
+      await loadFlags();
 
-  });
+      setEditFlag(null);
+      setOpen(false);
+    } catch (error) {
+      console.error("Update feature failed:", error);
 
-  await loadFlags();
+      alert(error.message);
+    }
+  }
 
-  setEditFlag(null);
+  function handleEdit(flag) {
+    setEditFlag(flag);
+    setOpen(true);
+  }
 
-  setOpen(false);
+  function handleCreate() {
+    setEditFlag(null);
+    setOpen(true);
+  }
 
-}
-function handleEdit(flag){
+  const enabled = flags.filter((flag) => flag.enabled).length;
+  const disabled = flags.length - enabled;
 
-  setEditFlag(flag);
+  const teams = new Set(
+    flags
+      .map((flag) => flag.owner_team)
+      .filter(Boolean)
+  ).size;
 
-  setOpen(true);
+  return (
+    <div className="feature-page">
 
-}
+      {/* ================================
+          PAGE HEADER
+      ================================= */}
 
-  const enabled=flags.filter(f=>f.enabled).length;
+      <div className="feature-header">
 
-  const disabled=flags.length-enabled;
+        <div className="page-header">
+          <h1>Feature Flags</h1>
 
-  return(
+          <p>
+            Manage all feature flags
+          </p>
+        </div>
 
-<div className="feature-page">
+        {/* CREATE BUTTON - TOP RIGHT */}
 
-<div className="feature-top">
+        <button
+          type="button"
+          className="create-feature-btn"
+          onClick={handleCreate}
+        >
+          <span className="create-icon">＋</span>
+          Create Feature
+        </button>
 
-<div>
+      </div>
 
-<p style={{ fontSize: '40px', fontWeight: '500' }}>Feature Flags</p>
-<br></br>
-<p>
 
-Manage your application features professionally.
+      {/* ================================
+          STATISTICS
+      ================================= */}
 
-</p>
+      <div className="stats-grid">
 
-</div>
+        <div className="stat-card">
+          <h2>{flags.length}</h2>
+          <span>Total Flags</span>
+        </div>
 
-<button
+        <div className="stat-card">
+          <h2>{enabled}</h2>
+          <span>Enabled</span>
+        </div>
 
-className="create-btn"
+        <div className="stat-card">
+          <h2>{disabled}</h2>
+          <span>Disabled</span>
+        </div>
 
-onClick={()=>setOpen(true)}
+        <div className="stat-card">
+          <h2>{teams}</h2>
+          <span>Teams</span>
+        </div>
 
->
+      </div>
 
-+ Create Feature
 
-</button>
+      {/* ================================
+          FEATURE FLAG TABLE
+      ================================= */}
 
-</div>
+      <div className="feature-table-card">
 
-<div className="stats-grid">
+        <div className="table-header">
 
-<div className="stat-card">
+          <div>
+            <h2>Feature Flags</h2>
 
-<h2>{flags.length}</h2>
+            <p>
+              Manage and monitor your application features.
+            </p>
+          </div>
 
-<span>Total Flags</span>
+          <span className="flag-count">
+            {flags.length} Flags
+          </span>
 
-</div>
+        </div>
 
-<div className="stat-card">
+        <FlagTable
+          flags={flags}
+          onEdit={handleEdit}
+        />
 
-<h2>{enabled}</h2>
+      </div>
 
-<span>Enabled</span>
 
-</div>
+      {/* ================================
+          CREATE / EDIT MODAL
+      ================================= */}
 
-<div className="stat-card">
+      <FlagModal
+        isOpen={open}
+        onClose={() => {
+          setEditFlag(null);
+          setOpen(false);
+        }}
+      >
 
-<h2>{disabled}</h2>
+        <AddFlagForm
+          onAdd={handleAdd}
+          onUpdate={handleUpdate}
+          editFlag={editFlag}
+          onCancel={() => {
+            setEditFlag(null);
+            setOpen(false);
+          }}
+        />
 
-<span>Disabled</span>
+      </FlagModal>
 
-</div>
-
-<div className="stat-card">
-
-<h2>
-
-{new Set(flags.map(f=>f.owner_team)).size}
-
-</h2>
-
-<span>Teams</span>
-
-</div>
-
-</div>
-
-<div className="card">
-
-<div className="table-header">
-
-<h2>Feature Flags</h2>
-
-</div>
-
-<FlagTable
-
-flags={flags}
-
-onEdit={handleEdit}
-
-/>
-
-</div>
-
-<FlagModal
-
-isOpen={open}
-
-onClose={()=>setOpen(false)}
-
->
-
-<AddFlagForm
-
-onAdd={handleAdd}
-
-onUpdate={handleUpdate}
-
-editFlag={editFlag}
-
-onCancel={() => {
-
-setEditFlag(null);
-
-setOpen(false);
-
-}}
-
-/>
-
-</FlagModal>
-
-</div>
-
+    </div>
   );
-
 }
 
 export default Features;

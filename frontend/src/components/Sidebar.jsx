@@ -1,50 +1,66 @@
 import { NavLink } from "react-router-dom";
 import "./../styles/sidebar.css";
 
-export default function Sidebar(){
+export default function Sidebar() {
+  const menu = [
+    {
+      name: "📊Dashboard",
+      path: "/",
+    },
+    {
+      name: "🚩Features",
+      path: "/features",
+    },
+    {
+      name: "🚀Releases",
+      path: "/releases",
+    },
+    {
+      name: "🌍Environments",
+      path: "/environments",
+    },
+    {
+      name: "🧹Cleanup",
+      path: "/cleanup",
+    },
+    {
+      name: "📋Audit Logs",
+      path: "/audit-logs",
+    },
+  ];
 
-    const menu=[
-        {name:"📊Dashboard",path:"/"},
-        {name:"🚩Features",path:"/features"},
-        {name:"🚀Releases",path:"/releases"},
-        {name:"🌍Environments",path:"/environments"},
-        {name:"📋Audit Logs",path:"/audit-logs"},
-    ];
+  return (
+    <aside className="sidebar">
 
-    return(
+      <div className="logo">
 
-        <aside className="sidebar">
+        <h2>FlagFlow</h2>
 
-            <div className="logo">
+        <span>Admin Panel</span>
 
-                <h2>FlagFlow</h2>
+      </div>
 
-                <span>Admin Panel</span>
+      <nav>
 
-            </div>
+        {menu.map((item) => (
 
-            <nav>
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.path === "/"}
+            className={({ isActive }) =>
+              isActive
+                ? "active nav-item"
+                : "nav-item"
+            }
+          >
+            {item.name}
+          </NavLink>
 
-                {
-                    menu.map(item=>(
+        ))}
 
-                        <NavLink
-                        key={item.path}
-                        to={item.path}
-                        className={({isActive})=>isActive?"active nav-item":"nav-item"}
-                        >
+      </nav>
 
-                            {item.name}
-
-                        </NavLink>
-
-                    ))
-                }
-
-            </nav>
-
-        </aside>
-
-    );
-
+    </aside>
+  );
 }

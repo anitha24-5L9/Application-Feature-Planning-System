@@ -24,13 +24,17 @@ width:700px;
 
 max-width:95%;
 
-background:white;
+background:var(--card-bg);
+
+color:var(--text-primary);
+
+border:1px solid var(--border-color);
 
 border-radius:18px;
 
 overflow:hidden;
 
-box-shadow:0 25px 60px rgba(0,0,0,.18);
+box-shadow:var(--shadow);
 
 animation:popup .25s ease;
 
@@ -66,7 +70,9 @@ justify-content:space-between;
 
 align-items:center;
 
-border-bottom:1px solid #e5e7eb;
+border-bottom:1px solid var(--border-color);
+
+background:var(--card-bg);
 
 }
 
@@ -74,26 +80,52 @@ border-bottom:1px solid #e5e7eb;
 
 font-size:22px;
 
-color:#0f172a;
+color:var(--text-primary);
 
 }
 
 .close-btn{
 
+width:40px;
+
+height:40px;
+
 border:none;
 
-background:none;
+border-radius:10px;
+
+background:transparent;
+
+color:var(--text-secondary);
 
 font-size:24px;
 
 cursor:pointer;
 
-color:#64748b;
+transition:.25s;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+}
+
+.close-btn:hover{
+
+background:var(--hover-bg);
+
+color:var(--text-primary);
 
 }
 
 .modal-body{
 
 padding:28px;
+
+background:var(--card-bg);
+
+color:var(--text-primary);
 
 }

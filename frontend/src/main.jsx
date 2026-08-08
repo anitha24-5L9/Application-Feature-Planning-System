@@ -7,21 +7,39 @@ import "./index.css";
 
 import { EnvironmentProvider } from "./context/EnvironmentContext";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
 
-  <AuthProvider>
+<React.StrictMode>
 
-    <EnvironmentProvider>
+<BrowserRouter>
 
-      <App />
 
-    </EnvironmentProvider>
+<ThemeProvider>
 
-  </AuthProvider>
+
+<AuthProvider>
+
+
+<EnvironmentProvider>
+
+
+<App />
+
+
+</EnvironmentProvider>
+
+
+</AuthProvider>
+
+
+</ThemeProvider>
+
 
 </BrowserRouter>
-  </React.StrictMode>
+
+
+</React.StrictMode>
+
 );

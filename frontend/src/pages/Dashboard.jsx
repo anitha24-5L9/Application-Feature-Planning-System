@@ -3,596 +3,443 @@ import { useEffect, useState } from "react";
 import { getFlags } from "../services/api";
 import "../styles/dashboard.css";
 
-import CleanupSuggestions from "../components/CleanupSuggestions";
-
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from "recharts";
-
-
 export default function Dashboard() {
-    const navigate = useNavigate();
-
-
-  const COLORS = ["#10b981", "#ef4444"];
+  const navigate = useNavigate();
 
   const [flags, setFlags] = useState([]);
-
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     loadFlags();
-
   }, []);
 
-
-
-  async function loadFlags(){
-
-    try{
-
+  async function loadFlags() {
+    try {
       const data = await getFlags();
-
       setFlags(data);
-
+    } catch (error) {
+      console.error("Error loading flags:", error);
+    } finally {
+      setLoading(false);
     }
-    catch(error){
-
-      console.error(
-        "Error loading flags:",
-        error
-      );
-
-    }
-
   }
-
-
-
-
-  // Statistics
 
   const totalFlags = flags.length;
 
+  const enabledFlags = flags.filter(
+    (flag) => flag.enabled
+  ).length;
 
-  const enabledFlags =
-    flags.filter(
-      flag => flag.enabled
-    ).length;
+  const disabledFlags = totalFlags - enabledFlags;
 
-
-  const disabledFlags =
-    totalFlags - enabledFlags;
-
-
-
-  const teams =
-    new Set(
-      flags
-      .map(flag => flag.owner_team)
+  const teams = new Set(
+    flags
+      .map((flag) => flag.owner_team)
       .filter(Boolean)
-    ).size;
+  ).size;
 
+  const enabledPercentage =
+    totalFlags > 0
+      ? Math.round((enabledFlags / totalFlags) * 100)
+      : 0;
 
+  const disabledPercentage =
+    totalFlags > 0
+      ? Math.round((disabledFlags / totalFlags) * 100)
+      : 0;
 
-  // Pie chart data
+  return (
+    <div className="dashboard-page">
 
-  const statusData = [
+      {/* ================= HEADER ================= */}
 
-    {
-      name:"Enabled",
-      value:enabledFlags
-    },
+      <div className="dashboard-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>
+            Overview of your feature flags and
+            configuration activity.
+          </p>
+        </div>
+      </div>
 
-    {
-      name:"Disabled",
-      value:disabledFlags
-    }
 
-  ];
+      {/* ================= STATISTICS ================= */}
 
+      <div className="dashboard-stats">
 
+        <div className="stat-card">
+          <div className="stat-info">
+            <span>Total Flags</span>
+            <strong>{totalFlags}</strong>
+          </div>
 
+          <div className="stat-icon blue">
+            🚩
+          </div>
+        </div>
 
-  // Team bar chart data
 
-  const teamMap = {};
+        <div className="stat-card">
+          <div className="stat-info">
+            <span>Enabled Flags</span>
+            <strong>{enabledFlags}</strong>
+          </div>
 
+          <div className="stat-icon green">
+            ✓
+          </div>
+        </div>
 
-  flags.forEach(flag=>{
 
+        <div className="stat-card">
+          <div className="stat-info">
+            <span>Disabled Flags</span>
+            <strong>{disabledFlags}</strong>
+          </div>
 
-    const team =
-      flag.owner_team || "Unknown";
+          <div className="stat-icon red">
+            ✕
+          </div>
+        </div>
 
 
-    teamMap[team] =
-      (teamMap[team] || 0) + 1;
+        <div className="stat-card">
+          <div className="stat-info">
+            <span>Owner Teams</span>
+            <strong>{teams}</strong>
+          </div>
 
+          <div className="stat-icon purple">
+            👥
+          </div>
+        </div>
 
-  });
+      </div>
 
 
+      {/* ================= FLAG STATUS ================= */}
 
-  const teamData =
-    Object.entries(teamMap)
-    .map(([team,count])=>({
+      <div className="dashboard-card flag-status-card">
 
-      team,
-      flags:count
+        <div className="dashboard-card-header">
 
-    }));
+          <div>
+            <h2>Flag Status</h2>
 
+            <p>
+              Distribution of enabled and disabled
+              feature flags.
+            </p>
+          </div>
 
+          <span className="status-total">
+            {totalFlags} Total
+          </span>
 
+        </div>
 
-return (
 
-<div className="dashboard">
+        {loading ? (
 
+          <div className="dashboard-loading">
+            Loading flag status...
+          </div>
 
-{/* Header */}
+        ) : (
 
-<div className="dashboard-header">
+          <div className="status-bars">
 
-<div>
+            {/* Enabled */}
 
-<h1>
-Feature Flag Dashboard
-</h1>
+            <div className="status-row">
 
+              <div className="status-label">
+                <span>Enabled</span>
+                <strong>{enabledFlags}</strong>
+              </div>
 
-<p>
-Welcome to the Feature Flag Management System
-</p>
+              <div className="status-track">
 
+                <div
+                  className="status-fill enabled-fill"
+                  style={{
+                    width: `${enabledPercentage}%`,
+                  }}
+                />
 
-</div>
+              </div>
 
-</div>
+              <span className="status-percentage">
+                {enabledPercentage}%
+              </span>
 
+            </div>
 
 
+            {/* Disabled */}
 
-{/* Statistics */}
+            <div className="status-row">
 
-<div className="stats-grid">
+              <div className="status-label">
+                <span>Disabled</span>
+                <strong>{disabledFlags}</strong>
+              </div>
 
+              <div className="status-track">
 
-<div className="stat-card">
+                <div
+                  className="status-fill disabled-fill"
+                  style={{
+                    width: `${disabledPercentage}%`,
+                  }}
+                />
 
-<div className="stat-title">
-Total Flags
-</div>
+              </div>
 
-<div className="stat-number">
-{totalFlags}
-</div>
+              <span className="status-percentage">
+                {disabledPercentage}%
+              </span>
 
-</div>
+            </div>
 
+          </div>
 
+        )}
 
+      </div>
 
-<div className="stat-card">
 
-<div className="stat-title">
-Enabled
-</div>
+      {/* ================= BOTTOM SECTION ================= */}
 
-<div className="stat-number">
-{enabledFlags}
-</div>
+      <div className="dashboard-bottom-grid">
 
-</div>
 
+        {/* ================= RECENT ACTIVITY ================= */}
 
+        <div className="dashboard-card recent-activity">
 
+          <div className="dashboard-card-header">
 
-<div className="stat-card">
+            <div>
+              <h2>Recent Activity</h2>
 
-<div className="stat-title">
-Disabled
-</div>
+              <p>
+                Latest feature flag status.
+              </p>
+            </div>
 
-<div className="stat-number">
-{disabledFlags}
-</div>
+          </div>
 
-</div>
 
+          <div className="activity-list">
 
+            {loading ? (
 
+              <div className="dashboard-loading">
+                Loading activity...
+              </div>
 
-<div className="stat-card">
+            ) : flags.length === 0 ? (
 
-<div className="stat-title">
-Teams
-</div>
+              <div className="activity-empty">
+                No feature flags found.
+              </div>
 
-<div className="stat-number">
-{teams}
-</div>
+            ) : (
 
-</div>
+              flags.slice(0, 6).map((flag) => (
 
+                <div
+                  className="activity-item"
+                  key={flag.key}
+                >
 
-</div>
+                  <div className="activity-icon">
+                    {flag.enabled ? "✓" : "✕"}
+                  </div>
 
+                  <div className="activity-content">
 
+                    <strong>
+                      {flag.key}
+                    </strong>
 
+                    <span>
+                      {flag.enabled
+                        ? "Enabled"
+                        : "Disabled"}
+                    </span>
 
+                  </div>
 
+                  <span
+                    className={
+                      flag.enabled
+                        ? "activity-status enabled"
+                        : "activity-status disabled"
+                    }
+                  >
+                    {flag.enabled
+                      ? "Active"
+                      : "Disabled"}
+                  </span>
 
-{/* Charts */}
+                </div>
 
-<div className="dashboard-charts">
+              ))
 
+            )}
 
+          </div>
 
-<div className="chart-card">
+        </div>
 
-<h3>
-Feature Status
-</h3>
 
+        {/* ================= QUICK ACTIONS ================= */}
 
-<ResponsiveContainer
-width="100%"
-height={300}
->
+        <div className="dashboard-card quick-actions">
 
+          <div className="dashboard-card-header">
 
-<PieChart>
+            <div>
+              <h2>Quick Actions</h2>
 
+              <p>
+                Quickly access common operations.
+              </p>
+            </div>
 
-<Pie
+          </div>
 
-data={statusData}
 
-dataKey="value"
+          <div className="quick-actions-list">
 
-innerRadius={60}
+            <button
+              className="quick-action-btn"
+              onClick={() =>
+                navigate("/features?action=create")
+              }
+            >
 
-outerRadius={100}
+              <span className="quick-action-icon">
+                +
+              </span>
 
-paddingAngle={5}
+              <span className="quick-action-content">
 
-label
+                <strong>
+                  Create Feature
+                </strong>
 
->
+                <small>
+                  Create a new feature flag
+                </small>
 
+              </span>
 
-{
-statusData.map(
-(entry,index)=>(
+              <span className="quick-arrow">
+                →
+              </span>
 
-<Cell
+            </button>
 
-key={index}
 
-fill={COLORS[index]}
+            <button
+              className="quick-action-btn"
+              onClick={() =>
+                navigate("/evaluate")
+              }
+            >
 
-/>
+              <span className="quick-action-icon">
+                ⚡
+              </span>
 
-)
+              <span className="quick-action-content">
 
-)
-}
+                <strong>
+                  Evaluate Flag
+                </strong>
 
+                <small>
+                  Test flag evaluation
+                </small>
 
-</Pie>
+              </span>
 
+              <span className="quick-arrow">
+                →
+              </span>
 
-<Tooltip/>
+            </button>
 
 
-</PieChart>
+            <button
+              className="quick-action-btn"
+              onClick={() =>
+                navigate("/audit-logs")
+              }
+            >
 
+              <span className="quick-action-icon">
+                ☷
+              </span>
 
-</ResponsiveContainer>
+              <span className="quick-action-content">
 
+                <strong>
+                  Audit Logs
+                </strong>
 
-</div>
+                <small>
+                  View system activity
+                </small>
 
+              </span>
 
+              <span className="quick-arrow">
+                →
+              </span>
 
+            </button>
 
 
+            <button
+              className="quick-action-btn"
+              onClick={() =>
+                navigate("/environments")
+              }
+            >
 
+              <span className="quick-action-icon">
+                🌍
+              </span>
 
-<div className="chart-card">
+              <span className="quick-action-content">
 
+                <strong>
+                  Environments
+                </strong>
 
-<h3>
-Flags by Team
-</h3>
+                <small>
+                  Manage environments
+                </small>
 
+              </span>
 
-<ResponsiveContainer
+              <span className="quick-arrow">
+                →
+              </span>
 
-width="100%"
+            </button>
 
-height={300}
+          </div>
 
->
+        </div>
 
+      </div>
 
-<BarChart data={teamData}>
-
-
-<CartesianGrid
-strokeDasharray="3 3"
-/>
-
-
-<XAxis
-dataKey="team"
-/>
-
-
-<YAxis/>
-
-
-<Tooltip/>
-
-
-<Bar
-
-dataKey="flags"
-
-fill="#6366f1"
-
-radius={[8,8,0,0]}
-
-/>
-
-
-</BarChart>
-
-
-</ResponsiveContainer>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Bottom Section */}
-
-
-<div className="dashboard-grid">
-
-
-
-
-
-{/* Recent Activity */}
-
-
-<div className="panel">
-
-
-<h2>
-Recent Activity
-</h2>
-
-
-
-{
-
-flags.length===0 ?
-
-<p>
-No feature flags found.
-</p>
-
-
-:
-
-
-flags.slice(0,5)
-.map(flag=>(
-
-
-<div
-
-className="activity-item"
-
-key={flag.key}
-
->
-
-
-<span className="activity-text">
-
-
-{
-flag.enabled
-?
-"🟢 Enabled"
-:
-"🔴 Disabled"
-}
-
-{" - "}
-
-{flag.key}
-
-
-</span>
-
-
-</div>
-
-
-))
-
-
-}
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Right Side */}
-
-
-<div>
-
-
-
-<div className="panel">
-
-
-<h2>
-Quick Actions
-</h2>
-
-
-
-<button
-className="quick-btn"
-onClick={() => navigate("/features?action=create")}
->
-➕ Create Feature
-</button>
-
-
-<button
-className="quick-btn"
-onClick={() => navigate("/evaluate")}
->
-
-⚡ Evaluate Flag
-
-</button>
-
-
-
-<button
-className="quick-btn"
-onClick={() => navigate("/audit-logs")}
->
-
-📋 Audit Logs
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-<br></br>
-
-<div className="panel status-panel">
-
-
-<h2>
-System Status
-</h2>
-
-
-
-<div className="status-item">
-
-<span>
-Backend
-</span>
-
-<span className="online">
-🟢 Online
-</span>
-
-</div>
-
-
-
-
-
-<div className="status-item">
-
-<span>
-Database
-</span>
-
-<span className="online">
-🟢 Connected
-</span>
-
-</div>
-
-
-
-
-
-<div className="status-item">
-
-<span>
-API
-</span>
-
-<span className="online">
-🟢 Healthy
-</span>
-
-</div>
-
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-<CleanupSuggestions />
-
-
-
-</div>
-
-
-
-);
-
-
+    </div>
+  );
 }

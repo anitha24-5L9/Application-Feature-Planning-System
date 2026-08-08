@@ -79,16 +79,14 @@ function FlagTable({
 
               </td>
               <td>
-
-<button
-className="edit-btn"
-onClick={() => onEdit(flag)}
->
-
-✏ Edit
-
-</button>
-
+    <div className="action-buttons">
+        <button
+            className="edit-btn"
+            onClick={() => onEdit(flag)}
+        >
+            ✏ Edit
+        </button>
+    </div>
 </td>
 
             </tr>

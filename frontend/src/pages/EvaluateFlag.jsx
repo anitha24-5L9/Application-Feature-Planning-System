@@ -28,7 +28,8 @@ export default function EvaluateFlag() {
     }
 
     const flag = flags.find(
-      (f) => f.key.toLowerCase() === flagKey.trim().toLowerCase()
+      (f) =>
+        f.key.toLowerCase() === flagKey.trim().toLowerCase()
     );
 
     if (!flag) {
@@ -54,11 +55,15 @@ export default function EvaluateFlag() {
 
   return (
     <div className="page-container">
+
       <h1>Evaluate Feature Flag</h1>
 
-      <p>Check whether a feature flag is enabled.</p>
+      <p>
+        Check whether a feature flag is enabled.
+      </p>
 
       <div className="evaluate-card">
+
         <h3>Flag Key</h3>
 
         <input
@@ -88,11 +93,16 @@ export default function EvaluateFlag() {
 
         {result && (
           <div className={`result-box ${result.status}`}>
+
             <h2>Result</h2>
+
             <p>{result.message}</p>
+
           </div>
         )}
+
       </div>
+
     </div>
   );
 }

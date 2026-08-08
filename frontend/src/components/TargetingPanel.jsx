@@ -12,16 +12,12 @@ import {
 import "../styles/targeting.css";
 
 export default function TargetingPanel({ flagKey, activeTab }) {
-
-  // User Targeting State
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
 
-  // Group Targeting State
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
 
-  // Available Groups
   const availableGroups = [
     "beta_users",
     "premium_plan",
@@ -30,7 +26,9 @@ export default function TargetingPanel({ flagKey, activeTab }) {
   ];
 
   useEffect(() => {
-    loadData();
+    if (flagKey) {
+      loadData();
+    }
   }, [flagKey]);
 
   async function loadData() {
@@ -41,165 +39,193 @@ export default function TargetingPanel({ flagKey, activeTab }) {
       const groupData = await getTargetGroups(flagKey);
       setGroups(groupData);
     } catch (error) {
-      console.error(error);
+      console.error("Targeting data loading failed:", error);
     }
   }
 
   async function handleAdd() {
     if (!userId.trim()) return;
 
-    await addTargetUser(flagKey, userId);
+    try {
+      await addTargetUser(flagKey, userId.trim());
 
-    setUserId("");
-
-    loadData();
+      setUserId("");
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Failed to add user");
+    }
   }
 
   async function handleDelete(id) {
-    await removeTargetUser(flagKey, id);
-
-    loadData();
+    try {
+      await removeTargetUser(flagKey, id);
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Failed to remove user");
+    }
   }
 
   async function handleAddGroup() {
     if (!selectedGroup) return;
 
-    await addTargetGroup({
-      flag_key: flagKey,
-      group_name: selectedGroup,
-    });
+    try {
+      await addTargetGroup({
+        flag_key: flagKey,
+        group_name: selectedGroup,
+      });
 
-    setSelectedGroup("");
-
-    loadData();
+      setSelectedGroup("");
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Failed to add group");
+    }
   }
 
   async function handleRemoveGroup(groupName) {
-    await removeTargetGroup(flagKey, groupName);
-
-    loadData();
+    try {
+      await removeTargetGroup(flagKey, groupName);
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Failed to remove group");
+    }
   }
 
   return (
     <div className="target-panel">
-
-      <h3>Targeting Rules</h3>
+      <div className="target-panel-header">
+        <h3>Targeting Rules</h3>
+        <p>
+          Control which users or groups receive this feature flag.
+        </p>
+      </div>
 
       {activeTab === "whitelist" && (
-        <>
+        <div className="target-section">
+          <div className="target-section-title">
+            <div>
+              <h4>User Whitelist</h4>
+              <span>Add specific users to this feature flag.</span>
+            </div>
 
-          {/* User Targeting */}
+            <span className="target-count">
+              {users.length} {users.length === 1 ? "user" : "users"}
+            </span>
+          </div>
 
           <div className="target-input">
-
             <input
+              type="text"
               placeholder="Enter User ID"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleAdd();
+                }
+              }}
             />
 
-            <button onClick={handleAdd}>
+            <button type="button" onClick={handleAdd}>
               Add User
             </button>
-
           </div>
 
           <div className="target-list">
-
             {users.length === 0 ? (
-              <p className="empty">
-                No targeted users.
-              </p>
+              <div className="empty">
+                <span className="empty-icon">👤</span>
+                <strong>No targeted users</strong>
+                <p>Add a user ID above to create a whitelist rule.</p>
+              </div>
             ) : (
               users.map((user) => (
                 <div
                   className="target-item"
                   key={user.user_id}
                 >
-                  <span>{user.user_id}</span>
+                  <div className="target-item-info">
+                    <span className="user-icon">👤</span>
+                    <span>{user.user_id}</span>
+                  </div>
 
                   <button
+                    type="button"
                     onClick={() => handleDelete(user.user_id)}
                   >
                     Remove
                   </button>
-
                 </div>
               ))
             )}
-
           </div>
-
-        </>
+        </div>
       )}
 
       {activeTab === "groups" && (
-        <>
+        <div className="target-section">
+          <div className="target-section-title">
+            <div>
+              <h4>Group Targeting</h4>
+              <span>Target this feature to selected user groups.</span>
+            </div>
 
-          <hr />
-
-          <br />
-          <br />
-
-          <h3>Group Targeting</h3>
+            <span className="target-count">
+              {groups.length} {groups.length === 1 ? "group" : "groups"}
+            </span>
+          </div>
 
           <div className="group-controls">
-
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
             >
-
-              <option value="">
-                Select Group
-              </option>
+              <option value="">Select Group</option>
 
               {availableGroups.map((group) => (
-                <option
-                  key={group}
-                  value={group}
-                >
+                <option key={group} value={group}>
                   {group}
                 </option>
               ))}
-
             </select>
 
-            <button onClick={handleAddGroup}>
+            <button type="button" onClick={handleAddGroup}>
               Add Group
             </button>
-
           </div>
 
           <ul className="group-list">
-
             {groups.length === 0 ? (
-              <p className="empty">
-                No targeted groups.
-              </p>
+              <li className="empty">
+                <span className="empty-icon">👥</span>
+                <strong>No targeted groups</strong>
+                <p>Select a group above to create a targeting rule.</p>
+              </li>
             ) : (
               groups.map((group) => (
                 <li key={group.group_name}>
-
-                  <span>{group.group_name}</span>
+                  <div className="target-item-info">
+                    <span className="group-icon">👥</span>
+                    <span>{group.group_name}</span>
+                  </div>
 
                   <button
+                    type="button"
                     onClick={() =>
                       handleRemoveGroup(group.group_name)
                     }
                   >
                     Remove
                   </button>
-
                 </li>
               ))
             )}
-
           </ul>
-
-        </>
+        </div>
       )}
-
     </div>
   );
 }

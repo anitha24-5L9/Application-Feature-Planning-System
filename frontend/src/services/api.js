@@ -3,11 +3,13 @@ const API_URL = "http://127.0.0.1:8000";
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
+  if (!token) {
+    throw new Error("Please login again. Authentication token is missing.");
+  }
+
   return {
     "Content-Type": "application/json",
-    ...(token && {
-      Authorization: `Bearer ${token}`,
-    }),
+    Authorization: `Bearer ${token}`,
   };
 }
 

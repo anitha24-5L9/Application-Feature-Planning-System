@@ -1,196 +1,916 @@
-/* ===========================
-   Environment Page
-=========================== */
+/* =========================================================
+   ENVIRONMENT PAGE
+========================================================= */
 
-.environment-page{
-    padding:30px;
-    background:#f5f7fb;
-    min-height:100vh;
+.environment-page {
+  padding: 30px;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  color: var(--text-primary);
+  box-sizing: border-box;
 }
 
-.environment-header{
-    margin-bottom:25px;
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.environment-header {
+  margin-bottom: 30px;
 }
 
-.environment-header h1{
-    margin:0;
-    color:#1f2937;
-    font-size:32px;
+.environment-header h1 {
+  color: var(--text-primary);
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px;
 }
 
-.environment-header p{
-    color:#6b7280;
-    margin-top:8px;
-    font-size:15px;
+.environment-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin: 0;
 }
 
-/* ===========================
-   Cards
-=========================== */
 
-.environment-card{
-    background:white;
-    border-radius:15px;
-    padding:25px;
-    margin-bottom:25px;
-    box-shadow:0 6px 18px rgba(0,0,0,.08);
+/* =========================================================
+   COMMON CARD
+========================================================= */
+
+.environment-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
 }
 
-.environment-card h2{
-    margin-top:0;
-    margin-bottom:20px;
-    color:#374151;
+.environment-card h2 {
+  color: var(--text-primary);
+  margin: 0 0 8px;
+  font-size: 22px;
 }
 
-/* ===========================
-   Inputs
-=========================== */
+.environment-card label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
 
-.environment-card label{
-    display:block;
-    margin-bottom:10px;
-    font-weight:600;
+
+/* =========================================================
+   FEATURE FLAG SELECTOR
+========================================================= */
+
+.flag-selector-card {
+  margin-bottom: 25px;
 }
 
 .environment-card select,
-.environment-card input{
-    width:100%;
-    padding:12px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
-    font-size:15px;
-    outline:none;
-    transition:.25s;
+.environment-card input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  outline: none;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+  box-sizing: border-box;
 }
 
 .environment-card select:focus,
-.environment-card input:focus{
-    border-color:#2563eb;
+.environment-card input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* ===========================
-   Table
-=========================== */
 
-.environment-table{
-    width:100%;
-    border-collapse:collapse;
+/* =========================================================
+   ENVIRONMENTS CARD HEADER
+========================================================= */
+
+.environments-card {
+  overflow: hidden;
 }
 
-.environment-table thead{
-    background:#2563eb;
-    color:white;
+.environments-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
-.environment-table th{
-    padding:15px;
-    text-align:left;
+.environments-card-header h2 {
+  margin-bottom: 5px;
 }
 
-.environment-table td{
-    padding:15px;
-    border-bottom:1px solid #ececec;
+.environment-card-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
-.environment-table tr:hover{
-    background:#f9fafb;
+
+/* =========================================================
+   TOP RIGHT CREATE ENVIRONMENT BUTTON
+========================================================= */
+
+.create-environment-top-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+  background: var(--primary);
+  color: #ffffff;
+
+  padding: 11px 18px;
+  min-height: 42px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.25);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
-/* ===========================
-   Status Badge
-=========================== */
-
-.status-badge{
-    background:#dcfce7;
-    color:#15803d;
-    padding:6px 14px;
-    border-radius:30px;
-    font-size:13px;
-    font-weight:bold;
+.create-environment-top-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
-/* ===========================
-   Buttons
-=========================== */
-
-button{
-    cursor:pointer;
-    border:none;
-    border-radius:8px;
-    padding:9px 15px;
-    margin-right:8px;
-    transition:.25s;
-    font-weight:600;
+.create-environment-top-btn:active {
+  transform: translateY(0);
 }
 
-.save-btn{
-    background:#2563eb;
-    color:white;
+.create-plus {
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 400;
 }
 
-.save-btn:hover{
-    background:#1d4ed8;
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.environment-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
-.edit-btn{
-    background:#f59e0b;
-    color:white;
+.environment-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: var(--card-bg);
+  margin-top: 5px;
 }
 
-.edit-btn:hover{
-    background:#d97706;
+.environment-table thead {
+  background: var(--primary);
 }
 
-.delete-btn{
-    background:#dc2626;
-    color:white;
+.environment-table th {
+  padding: 16px 18px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
 }
 
-.delete-btn:hover{
-    background:#b91c1c;
+.environment-table td {
+  padding: 16px 18px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  vertical-align: middle;
 }
 
-.create-btn{
-    background:#16a34a;
-    color:white;
-    min-width:150px;
+.environment-table tbody tr {
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
 }
 
-.create-btn:hover{
-    background:#15803d;
+.environment-table tbody tr:hover {
+  background: var(--hover-bg);
 }
 
-/* ===========================
-   Create Box
-=========================== */
 
-.create-box{
-    display:flex;
-    gap:15px;
-    margin-top:15px;
+/* Column Sizes */
+
+.environment-table th:nth-child(1),
+.environment-table td:nth-child(1) {
+  width: 23%;
 }
 
-.create-box input{
-    flex:1;
+.environment-table th:nth-child(2),
+.environment-table td:nth-child(2) {
+  width: 25%;
 }
 
-/* ===========================
-   Responsive
-=========================== */
-
-@media(max-width:900px){
-
-.environment-table{
-    display:block;
-    overflow-x:auto;
+.environment-table th:nth-child(3),
+.environment-table td:nth-child(3) {
+  width: 15%;
 }
 
-.create-box{
-    flex-direction:column;
+.environment-table th:nth-child(4),
+.environment-table td:nth-child(4) {
+  width: 37%;
 }
 
-button{
-    margin-top:8px;
+
+/* =========================================================
+   ENVIRONMENT NAME
+========================================================= */
+
+.environment-name {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
+
+/* =========================================================
+   OVERRIDE SELECT
+========================================================= */
+
+.override-select {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+
+  padding: 10px 12px !important;
+
+  background: var(--card-bg);
+  color: var(--text-primary);
+
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   EDIT INPUT
+========================================================= */
+
+.environment-edit-input {
+  width: 100% !important;
+  max-width: 300px;
+
+  padding: 9px 12px !important;
+
+  margin: 0 auto;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  background: #dcfce7;
+  color: #15803d;
+
+  padding: 6px 13px;
+
+  border-radius: 30px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  background: #16a34a;
+
+  border-radius: 50%;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.save-btn,
+.edit-btn,
+.delete-btn,
+.cancel-edit-btn {
+  border: none;
+  color: #ffffff;
+
+  padding: 9px 14px;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+
+  min-width: 72px;
+}
+
+.save-btn {
+  background: var(--primary);
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
+}
+
+.edit-btn {
+  background: #f59e0b;
+}
+
+.edit-btn:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+}
+
+.cancel-edit-btn {
+  background: #64748b;
+}
+
+.cancel-edit-btn:hover {
+  background: #475569;
+  transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   EMPTY ENVIRONMENT STATE
+========================================================= */
+
+.empty-environments {
+  padding: 45px 20px !important;
+}
+
+.empty-environments-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--text-secondary);
+}
+
+.empty-environments-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.empty-environments-content h3 {
+  margin: 0 0 8px;
+
+  color: var(--text-primary);
+
+  font-size: 18px;
+}
+
+.empty-environments-content p {
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 14px;
+}
+
+.empty-environments-content strong {
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   CREATE ENVIRONMENT MODAL OVERLAY
+========================================================= */
+
+.environment-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(2, 6, 23, 0.72);
+
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+
+  z-index: 9999;
+
+  box-sizing: border-box;
+
+  animation: modalOverlayIn 0.2s ease;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.environment-modal {
+  width: 100%;
+  max-width: 500px;
+
+  background: var(--card-bg);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.35),
+    0 10px 25px rgba(0, 0, 0, 0.2);
+
+  overflow: hidden;
+
+  animation: modalIn 0.25s ease;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.environment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 20px;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.modal-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(37, 99, 235, 0.12);
+
+  border-radius: 11px;
+
+  font-size: 22px;
+
+  flex-shrink: 0;
+}
+
+.environment-modal-header h2 {
+  margin: 0 0 4px;
+
+  color: var(--text-primary);
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.environment-modal-header p {
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+}
+
+
+/* Close */
+
+.modal-close-btn {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background: var(--hover-bg);
+
+  color: var(--text-secondary);
+
+  border-radius: 8px;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+
+  transform: rotate(90deg);
+}
+
+.modal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MODAL BODY
+========================================================= */
+
+.environment-modal-body {
+  padding: 24px;
+}
+
+
+/* Selected Flag */
+
+.modal-selected-flag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 22px;
+
+  padding: 12px 14px;
+
+  background: var(--hover-bg);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 10px;
+}
+
+.selected-flag-label {
+  color: var(--text-secondary);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.selected-flag-value {
+  color: var(--primary);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  word-break: break-word;
+
+  text-align: right;
+}
+
+
+/* Input */
+
+.modal-input-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--text-primary);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-environment-input {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  background: var(--bg-primary);
+
+  color: var(--text-primary);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 10px;
+
+  outline: none;
+
+  font-size: 15px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.modal-environment-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.modal-environment-input:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.modal-environment-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-input-hint {
+  margin: 8px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   MODAL FOOTER
+========================================================= */
+
+.environment-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 18px 24px;
+
+  border-top: 1px solid var(--border-color);
+
+  background: var(--hover-bg);
+}
+
+.modal-cancel-btn,
+.modal-create-btn {
+  border: none;
+
+  padding: 11px 18px;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+
+  min-height: 42px;
+}
+
+.modal-cancel-btn {
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  border: 1px solid var(--border-color);
+}
+
+.modal-cancel-btn:hover {
+  background: var(--card-bg);
+
+  color: var(--text-primary);
+
+  transform: translateY(-1px);
+}
+
+.modal-create-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  background: var(--primary);
+
+  color: #ffffff;
+
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.2);
+}
+
+.modal-create-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+.modal-create-btn:disabled,
+.modal-cancel-btn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   LOADING SPINNER
+========================================================= */
+
+.button-spinner {
+  width: 14px;
+  height: 14px;
+
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes modalOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .environment-page {
+    padding: 18px;
+  }
+
+  .environment-table {
+    min-width: 900px;
+  }
+
+  .environment-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .action-buttons {
+    justify-content: flex-start;
+  }
+}
+
+
+@media (max-width: 650px) {
+  .environment-header h1 {
+    font-size: 26px;
+  }
+
+  .environments-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .create-environment-top-btn {
+    width: 100%;
+  }
+
+  .environment-modal {
+    max-width: 100%;
+    border-radius: 15px;
+  }
+
+  .environment-modal-header {
+    padding: 18px;
+  }
+
+  .environment-modal-body {
+    padding: 18px;
+  }
+
+  .environment-modal-footer {
+    padding: 15px 18px;
+  }
+
+  .modal-selected-flag {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .selected-flag-value {
+    text-align: left;
+  }
+
+  .environment-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-cancel-btn,
+  .modal-create-btn {
+    width: 100%;
+  }
 }

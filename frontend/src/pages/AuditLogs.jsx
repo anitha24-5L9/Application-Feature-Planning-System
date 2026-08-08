@@ -219,12 +219,12 @@ function AuditLogs() {
 
                         <div className="modal-footer">
 
-                            <button
-                                className="close-btn"
-                                onClick={() => setSelectedLog(null)}
-                            >
-                                Close
-                            </button>
+                           <center> <button
+    className="close-btn"
+    onClick={() => setSelectedLog(null)}
+>
+    Close
+</button></center>
 
                         </div>
 

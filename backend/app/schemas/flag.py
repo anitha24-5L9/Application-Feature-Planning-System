@@ -9,7 +9,6 @@ class FlagBase(BaseModel):
     enabled: bool
     description: Optional[str] = None
     owner_team: str
-    enabled: bool
     rollout_percentage: int = 0
 
 
@@ -23,7 +22,6 @@ class FlagUpdate(BaseModel):
     enabled: Optional[bool] = None
     description: Optional[str] = None
     owner_team: Optional[str] = None
-    enabled: Optional[bool] = None
     rollout_percentage: Optional[int] = None
 
 

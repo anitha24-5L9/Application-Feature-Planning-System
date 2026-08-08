@@ -1,40 +1,226 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+/* ==========================================
+   GLOBAL RESET
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    font-family:'Inter',sans-serif;
-    background:#f4f7fc;
-    color:#1e293b;
+
+html {
+    min-height: 100%;
+
+    background: var(--bg-primary);
+
+    scroll-behavior: smooth;
 }
 
-a{
-    text-decoration:none;
-    color:inherit;
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background: var(--bg-primary);
+
+    color: var(--text-primary);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
 }
 
-button{
-    cursor:pointer;
-    font-family:inherit;
+
+#root {
+    min-height: 100vh;
 }
+
+
+/* ==========================================
+   LINKS
+========================================== */
+
+a {
+    text-decoration: none;
+
+    color: inherit;
+}
+
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+button {
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   FORM CONTROLS
+========================================== */
 
 input,
 select,
-textarea{
-    font-family:inherit;
+textarea,
+button {
+    font-family: inherit;
 }
 
-::-webkit-scrollbar{
-    width:8px;
+
+input,
+select,
+textarea {
+    background: var(--input-bg);
+
+    color: var(--text-primary);
+
+    border:
+        1px solid
+        var(--border-color);
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
-::-webkit-scrollbar-thumb{
-    background:#cbd5e1;
-    border-radius:10px;
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-secondary);
+
+    opacity: 0.8;
 }
 
-::-webkit-scrollbar-thumb:hover{
-    background:#94a3b8;
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
+}
+
+
+select {
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   TABLES
+========================================== */
+
+table {
+    background: var(--card-bg);
+
+    color: var(--text-primary);
+
+    border-color: var(--border-color);
+}
+
+
+/* ==========================================
+   TEXT SELECTION
+========================================== */
+
+::selection {
+    background: var(--primary);
+
+    color: #ffffff;
+}
+
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+
+    border-radius: 20px;
+
+    transition:
+        background 0.2s ease;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+
+/* ==========================================
+   SMOOTH THEME TRANSITION
+========================================== */
+
+body,
+button,
+input,
+select,
+textarea,
+table,
+.card,
+.navbar,
+.sidebar {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline:
+        2px solid
+        var(--primary);
+
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 700px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
 }

@@ -1,14 +1,64 @@
 .app-layout{
+
+
     display:flex;
+
+
     min-height:100vh;
+
+
+    background:
+    var(--bg-primary);
+
+
+    color:
+    var(--text-primary);
+
+
 }
+
+
+
+
 
 .main-section{
+
+
     margin-left:260px;
-    width:calc(100% - 260px);
-    
+
+
+    width:
+    calc(100% - 260px);
+
+
+
+    background:
+    var(--bg-primary);
+
+
+
+    min-height:100vh;
+
+
 }
 
+
+
+
+
 .page-content{
-    padding:15px 35px 35px;
+
+
+    padding:
+    20px 35px 35px;
+
+
+    background:
+    var(--bg-primary);
+
+
+    color:
+    var(--text-primary);
+
+
 }
