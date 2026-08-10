@@ -62,6 +62,7 @@ export async function getFlags(environment = null) {
   });
 }
 
+
 export async function getFlag(key) {
   const response = await fetch(`${API_URL}/flags/${key}`);
 
@@ -71,6 +72,8 @@ export async function getFlag(key) {
 
   return response.json();
 }
+
+
 export async function createFlag(flag) {
   const response = await fetch(`${API_URL}/flags/`, {
     method: "POST",
@@ -86,6 +89,7 @@ export async function createFlag(flag) {
 
   return data;
 }
+
 
 export async function updateFlag(key, flag) {
   const response = await fetch(`${API_URL}/flags/${key}`, {
@@ -103,6 +107,32 @@ export async function updateFlag(key, flag) {
   return data;
 }
 
+
+// ==========================================
+// Delete Feature Flag API
+// ==========================================
+
+export async function deleteFlag(key) {
+  const response = await fetch(
+    `${API_URL}/flags/${key}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Failed to delete flag"
+    );
+  }
+
+  return data;
+}
+
+
 // ==========================================
 // Target User APIs
 // ==========================================
@@ -114,6 +144,7 @@ export async function getTargetUsers(flagKey) {
 
   return response.json();
 }
+
 
 export async function addTargetUser(flagKey, userId) {
   const response = await fetch(
@@ -133,6 +164,7 @@ export async function addTargetUser(flagKey, userId) {
   return response.json();
 }
 
+
 export async function removeTargetUser(flagKey, userId) {
   const response = await fetch(
     `${API_URL}/targeting/users/${flagKey}/${userId}`,
@@ -143,6 +175,7 @@ export async function removeTargetUser(flagKey, userId) {
 
   return response.json();
 }
+
 
 // ==========================================
 // Target Group APIs
@@ -155,6 +188,7 @@ export async function getTargetGroups(flagKey) {
 
   return response.json();
 }
+
 
 export async function addTargetGroup(data) {
   const response = await fetch(
@@ -171,6 +205,7 @@ export async function addTargetGroup(data) {
   return response.json();
 }
 
+
 export async function removeTargetGroup(flagKey, groupName) {
   const response = await fetch(
     `${API_URL}/targeting/groups/${flagKey}/${groupName}`,
@@ -181,6 +216,7 @@ export async function removeTargetGroup(flagKey, groupName) {
 
   return response.json();
 }
+
 
 // ==========================================
 // Percentage Rollout APIs
@@ -197,6 +233,7 @@ export async function getRolloutPercentage(flagKey) {
 
   return response.json();
 }
+
 
 export async function updateRolloutPercentage(flagKey, percentage) {
   const response = await fetch(
@@ -219,6 +256,7 @@ export async function updateRolloutPercentage(flagKey, percentage) {
   return data;
 }
 
+
 // ==========================================
 // Environment CRUD APIs
 // ==========================================
@@ -232,6 +270,7 @@ export async function getEnvironments() {
 
   return response.json();
 }
+
 
 export async function createEnvironment(name) {
   const response = await fetch(`${API_URL}/environments/`, {
@@ -250,6 +289,7 @@ export async function createEnvironment(name) {
 
   return data;
 }
+
 
 export async function updateEnvironment(id, name) {
   const response = await fetch(
@@ -272,6 +312,7 @@ export async function updateEnvironment(id, name) {
   return data;
 }
 
+
 export async function deleteEnvironment(id) {
   const response = await fetch(
     `${API_URL}/environments/${id}`,
@@ -290,6 +331,7 @@ export async function deleteEnvironment(id) {
   return data;
 }
 
+
 // ==========================================
 // Environment Override APIs
 // ==========================================
@@ -305,6 +347,7 @@ export async function getEnvironmentOverrides(flagKey) {
 
   return response.json();
 }
+
 
 export async function saveEnvironmentOverride(data) {
   const response = await fetch(
@@ -324,6 +367,7 @@ export async function saveEnvironmentOverride(data) {
 
   return result;
 }
+
 
 // ==========================================
 // Evaluation API
@@ -346,6 +390,8 @@ export async function evaluateFlag(data) {
 
   return result;
 }
+
+
 // ==========================================
 // Analytics Sync API
 // ==========================================
@@ -370,6 +416,7 @@ export async function syncAnalytics() {
   return result;
 }
 
+
 // ==========================================
 // Cleanup Suggestions API
 // ==========================================
@@ -385,6 +432,7 @@ export async function getCleanupSuggestions(days = 30) {
 
   return response.json();
 }
+
 
 export async function markCleanupReviewed(flagKey) {
   const response = await fetch(

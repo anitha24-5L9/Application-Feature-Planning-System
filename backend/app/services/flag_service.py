@@ -7,6 +7,7 @@ from app.services.audit_service import create_audit_log
 
 from app.services.cleanup_helper import update_cleanup_status
 
+
 def get_flags(db: Session):
     return db.query(Flag).all()
 
@@ -36,7 +37,6 @@ def create_flag(
     update_cleanup_status(db_flag)
 
     db.add(db_flag)
-    
 
     db.commit()
 
@@ -90,6 +90,7 @@ def update_flag(
 
     for k, v in updates.items():
         setattr(db_flag, k, v)
+
     # Day 17 Cleanup Lifecycle
     update_cleanup_status(db_flag)
 
@@ -123,6 +124,64 @@ def update_flag(
     clear_flag_cache(db_flag.key)
 
     return db_flag
+
+
+# ==========================================
+# Delete Feature Flag
+# ==========================================
+
+def delete_flag(
+    db: Session,
+    key: str,
+    actor: str
+):
+
+    db_flag = (
+        db.query(Flag)
+        .filter(Flag.key == key)
+        .first()
+    )
+
+    if not db_flag:
+        return None
+
+    # Store flag information before deletion
+    before = {
+        "id": db_flag.id,
+        "key": db_flag.key,
+        "type": db_flag.type,
+        "default_value": db_flag.default_value,
+        "enabled": db_flag.enabled,
+        "description": db_flag.description,
+        "owner_team": db_flag.owner_team,
+        "rollout_percentage": db_flag.rollout_percentage
+    }
+
+    flag_key = db_flag.key
+
+    # Delete the flag
+    db.delete(db_flag)
+
+    db.commit()
+
+    # Create audit log after successful deletion
+    create_audit_log(
+        db=db,
+        action="DELETE",
+        actor=actor,
+        flag_key=flag_key,
+        environment="All",
+        before=before,
+        after={}
+    )
+
+    # Clear cached flag data
+    clear_flag_cache(flag_key)
+
+    return {
+        "message": "Feature flag deleted successfully",
+        "flag_key": flag_key
+    }
 
 
 def get_rollout_percentage(
@@ -168,8 +227,6 @@ def update_rollout_percentage(
     flag.rollout_percentage = rollout_percentage
 
     update_cleanup_status(flag)
-
-
 
     db.commit()
 

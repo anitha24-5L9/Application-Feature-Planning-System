@@ -19,11 +19,14 @@ import {
   getFlags,
   createFlag,
   updateFlag,
+  deleteFlag,
 } from "../services/api";
 
 import "../styles/flag.css";
 
+
 function Features() {
+
   const [searchParams] =
     useSearchParams();
 
@@ -46,6 +49,7 @@ function Features() {
   const [loading, setLoading] =
     useState(true);
 
+
   // ========================================
   // Load flags whenever environment changes
   // ========================================
@@ -54,7 +58,9 @@ function Features() {
     loadFlags();
   }, [environment]);
 
+
   async function loadFlags() {
+
     console.log(
       "Loading flags for environment:",
       environment
@@ -63,6 +69,7 @@ function Features() {
     setLoading(true);
 
     try {
+
       const data = await getFlags();
 
       console.log(
@@ -74,6 +81,7 @@ function Features() {
         Array.isArray(data)
           ? data
           : [];
+
 
       // ====================================
       // Environment filtering
@@ -91,16 +99,20 @@ function Features() {
               .toLowerCase() ===
             environment.toLowerCase()
           );
+
         });
+
 
       console.log(
         `Flags for ${environment}:`,
         environmentFlags
       );
 
+
       setFlags(
         environmentFlags
       );
+
 
     } catch (error) {
 
@@ -111,6 +123,7 @@ function Features() {
 
       setFlags([]);
 
+
     } finally {
 
       setLoading(false);
@@ -118,11 +131,13 @@ function Features() {
     }
   }
 
+
   // ========================================
   // Create Flag
   // ========================================
 
   async function handleAdd(flag) {
+
     try {
 
       await createFlag({
@@ -133,6 +148,7 @@ function Features() {
       await loadFlags();
 
       setOpen(false);
+
 
     } catch (error) {
 
@@ -146,11 +162,13 @@ function Features() {
     }
   }
 
+
   // ========================================
   // Update Flag
   // ========================================
 
   async function handleUpdate(flag) {
+
     try {
 
       await updateFlag(
@@ -173,6 +191,7 @@ function Features() {
       setEditFlag(null);
       setOpen(false);
 
+
     } catch (error) {
 
       console.error(
@@ -185,23 +204,64 @@ function Features() {
     }
   }
 
+
+  // ========================================
+  // Delete Flag
+  // ========================================
+
+  async function handleDelete(flag) {
+
+    const confirmed =
+      window.confirm(
+        `Are you sure you want to delete the feature flag "${flag.key}"?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+
+      await deleteFlag(flag.key);
+
+      await loadFlags();
+
+    } catch (error) {
+
+      console.error(
+        "Delete feature failed:",
+        error
+      );
+
+      alert(error.message);
+
+    }
+  }
+
+
   // ========================================
   // Edit
   // ========================================
 
   function handleEdit(flag) {
+
     setEditFlag(flag);
     setOpen(true);
+
   }
+
 
   // ========================================
   // Create
   // ========================================
 
   function handleCreate() {
+
     setEditFlag(null);
     setOpen(true);
+
   }
+
 
   // ========================================
   // Statistics
@@ -212,8 +272,10 @@ function Features() {
       (flag) => flag.enabled
     ).length;
 
+
   const disabled =
     flags.length - enabled;
+
 
   const teams =
     new Set(
@@ -225,11 +287,13 @@ function Features() {
         .filter(Boolean)
     ).size;
 
+
   // ========================================
   // UI
   // ========================================
 
   return (
+
     <div>
 
       {/* ================================
@@ -254,6 +318,7 @@ function Features() {
 
         </div>
 
+
         <button
           type="button"
           className="create-feature-btn"
@@ -269,6 +334,7 @@ function Features() {
         </button>
 
       </div>
+
 
       {/* ================================
           ENVIRONMENT INFO
@@ -290,6 +356,7 @@ function Features() {
 
       </div>
 
+
       {/* ================================
           STATISTICS
       ================================= */}
@@ -308,6 +375,7 @@ function Features() {
 
         </div>
 
+
         <div className="stat-card">
 
           <h2>
@@ -320,6 +388,7 @@ function Features() {
 
         </div>
 
+
         <div className="stat-card">
 
           <h2>
@@ -331,6 +400,7 @@ function Features() {
           </span>
 
         </div>
+
 
         <div className="stat-card">
 
@@ -345,6 +415,7 @@ function Features() {
         </div>
 
       </div>
+
 
       {/* ================================
           FEATURE FLAG TABLE
@@ -367,16 +438,22 @@ function Features() {
 
           </div>
 
+
           <span className="flag-count">
+
             {flags.length} Flags
+
           </span>
 
         </div>
 
+
         {loading ? (
 
           <div className="dashboard-loading">
+
             Loading {environment} flags...
+
           </div>
 
         ) : flags.length === 0 ? (
@@ -396,11 +473,13 @@ function Features() {
           <FlagTable
             flags={flags}
             onEdit={handleEdit}
+            onDelete={handleDelete}
           />
 
         )}
 
       </div>
+
 
       {/* ================================
           CREATE / EDIT MODAL
@@ -429,5 +508,6 @@ function Features() {
     </div>
   );
 }
+
 
 export default Features;

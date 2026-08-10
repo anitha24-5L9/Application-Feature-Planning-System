@@ -70,7 +70,8 @@
 
     cursor: pointer;
 
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.20);
+    box-shadow:
+        0 6px 16px rgba(37, 99, 235, 0.20);
 
     transition:
         transform 0.2s ease,
@@ -245,7 +246,11 @@
 
     border-collapse: collapse;
 
+    border-spacing: 0;
+
     background: var(--card-bg);
+
+    table-layout: auto;
 }
 
 
@@ -266,6 +271,8 @@
     font-weight: 700;
 
     border-bottom: 1px solid var(--border-color);
+
+    white-space: nowrap;
 }
 
 
@@ -292,58 +299,182 @@
 
 /* =====================================================
    ACTION COLUMN
+   IMPORTANT:
+   - Only Actions column is centered
+   - Header centered inside Actions column
+   - Buttons stay side-by-side
+===================================================== */
+
+.flag-table th.actions-header {
+    width: 220px;
+
+    min-width: 220px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+.flag-table td.actions-cell {
+    width: 220px;
+
+    min-width: 220px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+/* =====================================================
+   ACTION BUTTON CONTAINER
 ===================================================== */
 
 .action-buttons {
     display: flex;
 
-    justify-content: center;
+    flex-direction: row;
+
+    flex-wrap: nowrap;
 
     align-items: center;
 
+    justify-content: center;
+
     gap: 8px;
+
+    width: 100%;
+
+    white-space: nowrap;
 }
 
 
-.flag-table th:last-child,
-.flag-table td:last-child {
-    width: 140px;
-
-    text-align: center;
-
-    vertical-align: middle;
-}
-
+/* =====================================================
+   EDIT BUTTON
+===================================================== */
 
 .edit-btn {
-    background: var(--primary);
+    display: inline-flex;
 
-    color: #ffffff;
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 88px;
+
+    min-width: 88px;
+
+    height: 40px;
+
+    padding: 0 12px;
 
     border: none;
 
-    border-radius: 8px;
+    border-radius: 9px;
 
-    padding: 8px 16px;
+    background: #f59e0b;
 
-    min-width: 90px;
+    color: #ffffff;
 
-    font-size: 14px;
+    font-size: 13px;
 
     font-weight: 600;
 
     cursor: pointer;
 
+    white-space: nowrap;
+
+    box-sizing: border-box;
+
     transition:
         background 0.2s ease,
-        transform 0.2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 
 .edit-btn:hover {
-    background: var(--primary-hover);
+    background: #d97706;
 
     transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(245, 158, 11, 0.25);
+}
+
+
+.edit-btn:active {
+    transform: translateY(0);
+}
+
+
+/* =====================================================
+   DELETE BUTTON
+===================================================== */
+
+.delete-btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 88px;
+
+    min-width: 88px;
+
+    height: 40px;
+
+    padding: 0 10px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #dc2626;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.delete-btn:hover {
+    background: #b91c1c;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 12px rgba(220, 38, 38, 0.25);
+}
+
+
+.delete-btn:active {
+    transform: translateY(0);
 }
 
 
@@ -633,6 +764,47 @@
 
 
 /* =====================================================
+   ENVIRONMENT PAGE INFO
+===================================================== */
+
+.environment-page-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+
+.environment-page-info strong {
+    color: var(--text-primary);
+
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.dashboard-loading {
+    padding: 50px 30px;
+
+    text-align: center;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+}
+
+
+/* =====================================================
    RESPONSIVE
 ===================================================== */
 
@@ -695,7 +867,22 @@
 
 
     .flag-table {
-        min-width: 750px;
+        min-width: 900px;
+    }
+
+
+    .flag-table th.actions-header,
+    .flag-table td.actions-cell {
+        width: 220px;
+
+        min-width: 220px;
+    }
+
+
+    .action-buttons {
+        justify-content: center;
+
+        flex-wrap: nowrap;
     }
 
 }

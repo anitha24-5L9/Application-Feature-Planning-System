@@ -16,6 +16,7 @@ from app.services.flag_service import (
     get_flag_by_key,
     create_flag,
     update_flag,
+    delete_flag,
     get_rollout_percentage,
     update_rollout_percentage,
 )
@@ -32,8 +33,10 @@ router = APIRouter(
 
 def get_db():
     db = SessionLocal()
+
     try:
         yield db
+
     finally:
         db.close()
 
@@ -50,6 +53,7 @@ def read_flag(
     key: str,
     db: Session = Depends(get_db)
 ):
+
     flag = get_flag_by_key(db, key)
 
     if not flag:
@@ -105,6 +109,32 @@ def edit_flag(
         )
 
     return updated
+
+
+# ==========================================
+# Delete Feature Flag
+# ==========================================
+
+@router.delete("/{key}")
+def remove_flag(
+    key: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    deleted = delete_flag(
+        db,
+        key,
+        current_user.name
+    )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Flag not found"
+        )
+
+    return deleted
 
 
 @router.get("/{key}/rollout", response_model=RolloutResponse)
