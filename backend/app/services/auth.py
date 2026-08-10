@@ -1,10 +1,16 @@
 from sqlalchemy.orm import Session
 
 from jose import JWTError, jwt
+
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException
+
+from fastapi import (
+    Depends,
+    HTTPException
+)
 
 from app.models.user import User
+
 from app.security import (
     hash_password,
     verify_password,
@@ -15,25 +21,27 @@ from app.security import (
 from app.database.database import get_db
 
 
-
-# ==========================
+# ==========================================
 # Get User By Email
-# ==========================
+# ==========================================
 
 def get_user_by_email(
     db: Session,
     email: str
 ):
 
-    return db.query(User).filter(
-        User.email == email
-    ).first()
+    return (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
 
 
-
-# ==========================
+# ==========================================
 # Create User
-# ==========================
+# ==========================================
 
 def create_user(
     db: Session,
@@ -42,7 +50,9 @@ def create_user(
     password: str
 ):
 
-    hashed_password = hash_password(password)
+    hashed_password = hash_password(
+        password
+    )
 
     user = User(
         name=name,
@@ -60,10 +70,9 @@ def create_user(
     return user
 
 
-
-# ==========================
+# ==========================================
 # Authenticate User
-# ==========================
+# ==========================================
 
 def authenticate_user(
     db: Session,
@@ -76,10 +85,8 @@ def authenticate_user(
         email
     )
 
-
     if not user:
         return None
-
 
     if not verify_password(
         password,
@@ -87,19 +94,65 @@ def authenticate_user(
     ):
         return None
 
+    return user
+
+
+# ==========================================
+# Change Password
+# ==========================================
+
+def change_user_password(
+    db: Session,
+    user: User,
+    current_password: str,
+    new_password: str
+):
+
+    # Verify current password
+
+    if not verify_password(
+        current_password,
+        user.hashed_password
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Current password is incorrect"
+        )
+
+    # Prevent same password
+
+    if verify_password(
+        new_password,
+        user.hashed_password
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "New password must be different "
+                "from current password"
+            )
+        )
+
+    # Hash new password
+
+    user.hashed_password = hash_password(
+        new_password
+    )
+
+    db.commit()
+
+    db.refresh(user)
 
     return user
 
 
-
-# ==========================
+# ==========================================
 # JWT Authentication
-# ==========================
+# ==========================================
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/auth/login"
 )
-
 
 
 def get_current_user(
@@ -112,7 +165,6 @@ def get_current_user(
         detail="Could not validate credentials"
     )
 
-
     try:
 
         payload = jwt.decode(
@@ -121,27 +173,24 @@ def get_current_user(
             algorithms=[ALGORITHM]
         )
 
-
         email: str = payload.get("sub")
-
 
         if email is None:
             raise credentials_exception
-
 
     except JWTError:
 
         raise credentials_exception
 
-
-
-    user = db.query(User).filter(
-        User.email == email
-    ).first()
-
+    user = (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
 
     if user is None:
         raise credentials_exception
-
 
     return user

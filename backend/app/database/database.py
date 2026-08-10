@@ -1,30 +1,63 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-
-# SQLite Database URL
-DATABASE_URL = "sqlite:///./feature_planning.db"
-
-# Create database engine
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
+from sqlalchemy.orm import (
+    sessionmaker,
+    declarative_base
 )
 
-# Create session
+
+# ==========================================
+# SQLite Database Configuration
+# ==========================================
+
+DATABASE_URL = "sqlite:///./feature_planning.db"
+
+DATABASE_TYPE = "SQLite"
+
+DATABASE_NAME = "feature_planning.db"
+
+
+# ==========================================
+# Database Engine
+# ==========================================
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={
+        "check_same_thread": False
+    }
+)
+
+
+# ==========================================
+# Database Session
+# ==========================================
+
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine
 )
 
-# Base class for all models
+
+# ==========================================
+# SQLAlchemy Base
+# ==========================================
+
 Base = declarative_base()
 
 
-# Dependency for FastAPI
+# ==========================================
+# FastAPI Database Dependency
+# ==========================================
+
 def get_db():
+
     db = SessionLocal()
+
     try:
+
         yield db
+
     finally:
+
         db.close()

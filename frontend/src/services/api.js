@@ -1,10 +1,16 @@
 const API_URL = "http://127.0.0.1:8000";
 
+// ==========================================
+// Authentication Headers
+// ==========================================
+
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    throw new Error("Please login again. Authentication token is missing.");
+    throw new Error(
+      "Please login again. Authentication token is missing."
+    );
   }
 
   return {
@@ -14,11 +20,87 @@ function getAuthHeaders() {
 }
 
 // ==========================================
+// Authentication APIs
+// ==========================================
+
+export async function getCurrentUser() {
+  const response = await fetch(
+    `${API_URL}/auth/me`,
+    {
+      method: "GET",
+      headers: getAuthHeaders(),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Failed to load user profile"
+    );
+  }
+
+  return data;
+}
+
+
+export async function changePassword(
+  currentPassword,
+  newPassword
+) {
+  const response = await fetch(
+    `${API_URL}/auth/change-password`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Failed to change password"
+    );
+  }
+
+  return data;
+}
+
+
+export async function getSystemStatus() {
+  const response = await fetch(
+    `${API_URL}/auth/status`,
+    {
+      method: "GET",
+      headers: getAuthHeaders(),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Failed to load system status"
+    );
+  }
+
+  return data;
+}
+
+
+// ==========================================
 // Feature Flag APIs
 // ==========================================
 
 export async function getFlags(environment = null) {
-  const response = await fetch(`${API_URL}/flags/`);
+  const response = await fetch(
+    `${API_URL}/flags/`
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch flags");
@@ -30,11 +112,7 @@ export async function getFlags(environment = null) {
     return [];
   }
 
-  /*
-  ==========================================
-  Environment filtering
-  ==========================================
-  */
+  // Environment filtering
 
   if (!environment) {
     return data;
@@ -49,8 +127,8 @@ export async function getFlags(environment = null) {
     const flagEnvironment =
       String(
         flag.environment ??
-          flag.environment_name ??
-          ""
+        flag.environment_name ??
+        ""
       )
         .trim()
         .toLowerCase();
@@ -64,7 +142,9 @@ export async function getFlags(environment = null) {
 
 
 export async function getFlag(key) {
-  const response = await fetch(`${API_URL}/flags/${key}`);
+  const response = await fetch(
+    `${API_URL}/flags/${key}`
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch flag");
@@ -75,16 +155,21 @@ export async function getFlag(key) {
 
 
 export async function createFlag(flag) {
-  const response = await fetch(`${API_URL}/flags/`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(flag),
-  });
+  const response = await fetch(
+    `${API_URL}/flags/`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(flag),
+    }
+  );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "Failed to create flag");
+    throw new Error(
+      data.detail || "Failed to create flag"
+    );
   }
 
   return data;
@@ -92,16 +177,21 @@ export async function createFlag(flag) {
 
 
 export async function updateFlag(key, flag) {
-  const response = await fetch(`${API_URL}/flags/${key}`, {
-    method: "PUT",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(flag),
-  });
+  const response = await fetch(
+    `${API_URL}/flags/${key}`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(flag),
+    }
+  );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "Failed to update flag");
+    throw new Error(
+      data.detail || "Failed to update flag"
+    );
   }
 
   return data;
@@ -146,7 +236,10 @@ export async function getTargetUsers(flagKey) {
 }
 
 
-export async function addTargetUser(flagKey, userId) {
+export async function addTargetUser(
+  flagKey,
+  userId
+) {
   const response = await fetch(
     `${API_URL}/targeting/users/`,
     {
@@ -165,7 +258,10 @@ export async function addTargetUser(flagKey, userId) {
 }
 
 
-export async function removeTargetUser(flagKey, userId) {
+export async function removeTargetUser(
+  flagKey,
+  userId
+) {
   const response = await fetch(
     `${API_URL}/targeting/users/${flagKey}/${userId}`,
     {
@@ -206,7 +302,10 @@ export async function addTargetGroup(data) {
 }
 
 
-export async function removeTargetGroup(flagKey, groupName) {
+export async function removeTargetGroup(
+  flagKey,
+  groupName
+) {
   const response = await fetch(
     `${API_URL}/targeting/groups/${flagKey}/${groupName}`,
     {
@@ -222,20 +321,27 @@ export async function removeTargetGroup(flagKey, groupName) {
 // Percentage Rollout APIs
 // ==========================================
 
-export async function getRolloutPercentage(flagKey) {
+export async function getRolloutPercentage(
+  flagKey
+) {
   const response = await fetch(
     `${API_URL}/flags/${flagKey}/rollout`
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch rollout percentage");
+    throw new Error(
+      "Failed to fetch rollout percentage"
+    );
   }
 
   return response.json();
 }
 
 
-export async function updateRolloutPercentage(flagKey, percentage) {
+export async function updateRolloutPercentage(
+  flagKey,
+  percentage
+) {
   const response = await fetch(
     `${API_URL}/flags/${flagKey}/rollout`,
     {
@@ -250,7 +356,9 @@ export async function updateRolloutPercentage(flagKey, percentage) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "Failed to update rollout");
+    throw new Error(
+      data.detail || "Failed to update rollout"
+    );
   }
 
   return data;
@@ -262,10 +370,14 @@ export async function updateRolloutPercentage(flagKey, percentage) {
 // ==========================================
 
 export async function getEnvironments() {
-  const response = await fetch(`${API_URL}/environments/`);
+  const response = await fetch(
+    `${API_URL}/environments/`
+  );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch environments");
+    throw new Error(
+      "Failed to fetch environments"
+    );
   }
 
   return response.json();
@@ -273,25 +385,34 @@ export async function getEnvironments() {
 
 
 export async function createEnvironment(name) {
-  const response = await fetch(`${API_URL}/environments/`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      name,
-    }),
-  });
+  const response = await fetch(
+    `${API_URL}/environments/`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        name,
+      }),
+    }
+  );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "Failed to create environment");
+    throw new Error(
+      data.detail ||
+      "Failed to create environment"
+    );
   }
 
   return data;
 }
 
 
-export async function updateEnvironment(id, name) {
+export async function updateEnvironment(
+  id,
+  name
+) {
   const response = await fetch(
     `${API_URL}/environments/${id}`,
     {
@@ -306,7 +427,10 @@ export async function updateEnvironment(id, name) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "Failed to update environment");
+    throw new Error(
+      data.detail ||
+      "Failed to update environment"
+    );
   }
 
   return data;
@@ -325,7 +449,10 @@ export async function deleteEnvironment(id) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || "Failed to delete environment");
+    throw new Error(
+      data.detail ||
+      "Failed to delete environment"
+    );
   }
 
   return data;
@@ -336,20 +463,26 @@ export async function deleteEnvironment(id) {
 // Environment Override APIs
 // ==========================================
 
-export async function getEnvironmentOverrides(flagKey) {
+export async function getEnvironmentOverrides(
+  flagKey
+) {
   const response = await fetch(
     `${API_URL}/environment-overrides/${flagKey}`
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch environment overrides");
+    throw new Error(
+      "Failed to fetch environment overrides"
+    );
   }
 
   return response.json();
 }
 
 
-export async function saveEnvironmentOverride(data) {
+export async function saveEnvironmentOverride(
+  data
+) {
   const response = await fetch(
     `${API_URL}/environment-overrides/`,
     {
@@ -362,7 +495,10 @@ export async function saveEnvironmentOverride(data) {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.detail || "Failed to save override");
+    throw new Error(
+      result.detail ||
+      "Failed to save override"
+    );
   }
 
   return result;
@@ -374,18 +510,23 @@ export async function saveEnvironmentOverride(data) {
 // ==========================================
 
 export async function evaluateFlag(data) {
-  const response = await fetch(`${API_URL}/evaluate/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    `${API_URL}/evaluate/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.detail || "Evaluation failed");
+    throw new Error(
+      result.detail || "Evaluation failed"
+    );
   }
 
   return result;
@@ -409,7 +550,8 @@ export async function syncAnalytics() {
 
   if (!response.ok) {
     throw new Error(
-      result.detail || "Analytics sync failed"
+      result.detail ||
+      "Analytics sync failed"
     );
   }
 
@@ -421,20 +563,26 @@ export async function syncAnalytics() {
 // Cleanup Suggestions API
 // ==========================================
 
-export async function getCleanupSuggestions(days = 30) {
+export async function getCleanupSuggestions(
+  days = 30
+) {
   const response = await fetch(
     `${API_URL}/cleanup/suggestions?days=${days}`
   );
 
   if (!response.ok) {
-    throw new Error("Failed to load cleanup suggestions");
+    throw new Error(
+      "Failed to load cleanup suggestions"
+    );
   }
 
   return response.json();
 }
 
 
-export async function markCleanupReviewed(flagKey) {
+export async function markCleanupReviewed(
+  flagKey
+) {
   const response = await fetch(
     `${API_URL}/cleanup/review/${flagKey}`,
     {
@@ -447,7 +595,8 @@ export async function markCleanupReviewed(flagKey) {
 
   if (!response.ok) {
     throw new Error(
-      result.detail || "Failed to review cleanup suggestion"
+      result.detail ||
+      "Failed to review cleanup suggestion"
     );
   }
 

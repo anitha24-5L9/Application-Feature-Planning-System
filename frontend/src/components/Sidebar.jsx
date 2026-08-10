@@ -4,28 +4,32 @@ import "./../styles/sidebar.css";
 export default function Sidebar() {
   const menu = [
     {
-      name: "📊Dashboard",
+      name: "📊 Dashboard",
       path: "/",
     },
     {
-      name: "🚩Features",
+      name: "🚩 Features",
       path: "/features",
     },
     {
-      name: "🚀Releases",
+      name: "🚀 Releases",
       path: "/releases",
     },
     {
-      name: "🌍Environments",
+      name: "🌍 Environments",
       path: "/environments",
     },
     {
-      name: "🧹Cleanup",
+      name: "🧹 Cleanup",
       path: "/cleanup",
     },
     {
-      name: "📋Audit Logs",
+      name: "📋 Audit Logs",
       path: "/audit-logs",
+    },
+    {
+      name: "⚙️ Settings",
+      path: "/settings",
     },
   ];
 
@@ -33,17 +37,12 @@ export default function Sidebar() {
     <aside className="sidebar">
 
       <div className="logo">
-
         <h2>FlagFlow</h2>
-
         <span>Admin Panel</span>
-
       </div>
 
       <nav>
-
         {menu.map((item) => (
-
           <NavLink
             key={item.path}
             to={item.path}
@@ -56,9 +55,7 @@ export default function Sidebar() {
           >
             {item.name}
           </NavLink>
-
         ))}
-
       </nav>
 
     </aside>

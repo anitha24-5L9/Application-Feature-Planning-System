@@ -3,7 +3,10 @@ import "./styles/layout.css";
 import "./styles/modal.css";
 import "./styles/theme.css";
 
-import { Routes, Route } from "react-router-dom";
+import {
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
@@ -14,6 +17,7 @@ import Releases from "./pages/Releases";
 import Environments from "./pages/Environments";
 import AuditLogs from "./pages/AuditLogs";
 import CleanupSuggestions from "./pages/CleanupSuggestions";
+import Settings from "./pages/Settings";
 
 import FlagDetail from "./pages/FlagDetail";
 import EvaluateFlag from "./pages/EvaluateFlag";
@@ -104,6 +108,15 @@ function App() {
                       <Route
                         path="/evaluate"
                         element={<EvaluateFlag />}
+                      />
+
+                      {/* ============================
+                          SETTINGS
+                      ============================ */}
+
+                      <Route
+                        path="/settings"
+                        element={<Settings />}
                       />
 
                     </Routes>
