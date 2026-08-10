@@ -42,6 +42,23 @@
 
 .mobile-brand {
     display: none;
+
+    align-items: center;
+    gap: 8px;
+
+    border: none;
+    background: transparent;
+
+    color: var(--text-primary);
+
+    font-size: 17px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.brand-icon {
+    font-size: 18px;
 }
 
 .nav-title-block {
@@ -99,7 +116,7 @@
 
     background: var(--bg-secondary);
 
-    border: none solid var(--border-color);
+    border: 1px solid transparent;
     border-radius: 11px;
 
     transition:
@@ -122,10 +139,11 @@
 
     opacity: 0.75;
 }
+
 .search-container input {
-  border: none;
-  outline: 1px;
-  background: transparent;
+    border: none;
+    outline: none;
+    background: transparent;
 }
 
 .search-box {
@@ -371,32 +389,66 @@
 ========================================== */
 
 .environment-switcher {
-    min-width: 155px;
-    height: 44px;
+    position: relative;
+
+    width: 178px;
+
+    z-index: 5000;
+}
+
+
+/* ==========================================
+   ENVIRONMENT TRIGGER
+========================================== */
+
+.environment-trigger {
+    width: 100%;
+    height: 48px;
 
     display: flex;
     align-items: center;
 
     gap: 9px;
 
-    padding: 5px 9px;
+    padding: 0 13px;
 
     border: 1px solid var(--border-color);
+    border-radius: 14px;
 
-    border-radius: 11px;
+    background: var(--card-bg);
 
-    background: var(--bg-secondary);
+    color: var(--text-primary);
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.06);
+
+    cursor: pointer;
 
     transition:
         border-color 0.2s ease,
-        background 0.2s ease;
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
 }
 
-.environment-switcher:hover {
+.environment-trigger:hover,
+.environment-trigger.open {
     border-color: var(--primary);
+
+    box-shadow:
+        0 5px 18px rgba(37, 99, 235, 0.13);
 }
 
-.environment-icon {
+.environment-trigger.open {
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================
+   ENVIRONMENT TRIGGER ICON
+========================================== */
+
+.environment-trigger-icon {
     width: 30px;
     height: 30px;
 
@@ -404,47 +456,318 @@
     align-items: center;
     justify-content: center;
 
-    border-radius: 8px;
+    flex-shrink: 0;
 
-    background: rgba(37, 99, 235, 0.1);
+    border-radius: 9px;
 
-    font-size: 15px;
+    background:
+        rgba(37, 99, 235, 0.10);
+
+    font-size: 14px;
 }
 
-.environment-content {
+
+/* ==========================================
+   ENVIRONMENT TRIGGER TEXT
+========================================== */
+
+.environment-trigger-text {
+    flex: 1;
+
     min-width: 0;
 
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
+    overflow: hidden;
 
-.environment-label {
-    color: var(--text-secondary);
-
-    font-size: 9px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-
-.env-select {
-    min-width: 105px;
-
-    padding: 0;
-
-    border: none !important;
-    outline: none;
-
-    background: transparent !important;
+    text-align: left;
 
     color: var(--text-primary);
 
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 750;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   CHEVRON
+========================================== */
+
+.environment-chevron {
+    flex-shrink: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
     font-weight: 700;
 
+    line-height: 1;
+
+    transform: translateY(-2px);
+
+    transition:
+        transform 0.22s ease,
+        color 0.2s ease;
+}
+
+.environment-chevron.rotate {
+    transform:
+        rotate(180deg)
+        translateY(2px);
+
+    color: var(--primary);
+}
+
+
+/* ==========================================
+   CUSTOM ENVIRONMENT DROPDOWN
+========================================== */
+
+.environment-dropdown {
+    position: absolute;
+
+    top: calc(100% + 8px);
+
+    left: 0;
+    right: 0;
+
+    padding: 6px;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.18);
+
+    overflow: hidden;
+
+    z-index: 9999;
+
+    animation: environmentDrop 0.18s ease-out;
+}
+
+@keyframes environmentDrop {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-7px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* ==========================================
+   ENVIRONMENT OPTION
+========================================== */
+
+.environment-option {
+    width: 100%;
+
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 10px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: var(--text-primary);
+
+    text-align: left;
+
     cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        transform 0.15s ease;
+}
+
+.environment-option:hover {
+    background: var(--hover-bg);
+
+    transform: translateX(2px);
+}
+
+.environment-option.selected {
+    background:
+        rgba(37, 99, 235, 0.08);
+}
+
+
+/* ==========================================
+   OPTION ICON
+========================================== */
+
+.environment-option-icon {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    font-size: 18px;
+
+    line-height: 1;
+}
+
+
+/* ==========================================
+   ALL ENVIRONMENTS
+========================================== */
+
+.environment-option-icon.all {
+    font-size: 16px;
+}
+
+
+/* ==========================================
+   DEVELOPMENT
+========================================== */
+
+.environment-option-icon.development {
+    color: #22c55e;
+
+    text-shadow:
+        0 0 7px rgba(34, 197, 94, 0.35);
+}
+
+
+/* ==========================================
+   TESTING
+========================================== */
+
+.environment-option-icon.testing {
+    color: #facc15;
+
+    text-shadow:
+        0 0 7px rgba(250, 204, 21, 0.35);
+}
+
+
+/* ==========================================
+   PRODUCTION
+========================================== */
+
+.environment-option-icon.production {
+    color: #ef4444;
+
+    text-shadow:
+        0 0 7px rgba(239, 68, 68, 0.35);
+}
+
+
+/* ==========================================
+   STAGING
+========================================== */
+
+.environment-option-icon.staging {
+    color: #a855f7;
+
+    text-shadow:
+        0 0 7px rgba(168, 85, 247, 0.35);
+}
+
+
+/* ==========================================
+   OPTION TEXT
+========================================== */
+
+.environment-option-text {
+    flex: 1;
+
+    color: var(--text-primary);
+
+    font-size: 13px;
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   SELECTED CHECK
+========================================== */
+
+.environment-check {
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* ==========================================
+   DARK MODE
+========================================== */
+
+[data-theme="dark"] .environment-trigger {
+    background: var(--card-bg);
+
+    border-color: var(--border-color);
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] .environment-trigger:hover,
+[data-theme="dark"] .environment-trigger.open {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 5px 22px rgba(59, 130, 246, 0.18);
+}
+
+[data-theme="dark"] .environment-dropdown {
+    background: #0f172a;
+
+    border-color: #263247;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .environment-option:hover {
+    background: #182235;
+}
+
+[data-theme="dark"] .environment-option.selected {
+    background:
+        rgba(59, 130, 246, 0.12);
 }
 
 
@@ -565,15 +888,23 @@
 }
 
 @keyframes profileDrop {
+
     from {
         opacity: 0;
-        transform: translateY(-6px) scale(0.98);
+
+        transform:
+            translateY(-6px)
+            scale(0.98);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+
+        transform:
+            translateY(0)
+            scale(1);
     }
+
 }
 
 .profile-header {
@@ -736,10 +1067,11 @@
 
 
 /* ==========================================
-   RESPONSIVE
+   RESPONSIVE - 1200
 ========================================== */
 
 @media (max-width: 1200px) {
+
     .navbar {
         padding: 0 20px;
     }
@@ -749,16 +1081,22 @@
     }
 
     .environment-switcher {
-        min-width: 145px;
+        width: 165px;
     }
 
     .nav-title-block {
         display: none;
     }
+
 }
 
 
+/* ==========================================
+   RESPONSIVE - 900
+========================================== */
+
 @media (max-width: 900px) {
+
     .navbar {
         height: 68px;
 
@@ -771,23 +1109,6 @@
 
     .mobile-brand {
         display: flex;
-
-        align-items: center;
-
-        gap: 8px;
-
-        border: none;
-
-        background: transparent;
-
-        color: var(--text-primary);
-
-        font-size: 17px;
-        font-weight: 800;
-    }
-
-    .brand-icon {
-        font-size: 18px;
     }
 
     .nav-right {
@@ -799,12 +1120,18 @@
     }
 
     .environment-switcher {
-        min-width: 135px;
+        width: 150px;
     }
+
 }
 
 
+/* ==========================================
+   RESPONSIVE - 700
+========================================== */
+
 @media (max-width: 700px) {
+
     .navbar {
         padding: 0 12px;
     }
@@ -841,6 +1168,7 @@
 
     .search-wrapper:focus-within
     .search-container {
+
         width: 210px;
 
         justify-content: flex-start;
@@ -850,6 +1178,7 @@
 
     .search-wrapper:focus-within
     .search-box {
+
         position: static;
 
         width: 100%;
@@ -859,23 +1188,43 @@
         pointer-events: auto;
     }
 
-    .environment-switcher {
-        min-width: 42px;
 
-        width: 42px;
+    /* Environment mobile */
+
+    .environment-switcher {
+        width: 46px;
+    }
+
+    .environment-trigger {
+        width: 46px;
+        height: 42px;
 
         padding: 5px;
 
         justify-content: center;
+
+        border-radius: 12px;
     }
 
-    .environment-icon {
+    .environment-trigger-icon {
+        width: 32px;
+        height: 32px;
+
         margin: 0;
     }
 
-    .environment-content {
+    .environment-trigger-text,
+    .environment-chevron {
         display: none;
     }
+
+    .environment-dropdown {
+        width: 190px;
+
+        right: 0;
+        left: auto;
+    }
+
 
     .theme-button {
         width: 40px;
@@ -893,12 +1242,22 @@
         top: 72px;
         right: 12px;
 
-        width: min(290px, calc(100vw - 24px));
+        width:
+            min(
+                290px,
+                calc(100vw - 24px)
+            );
     }
+
 }
 
 
+/* ==========================================
+   RESPONSIVE - 450
+========================================== */
+
 @media (max-width: 450px) {
+
     .navbar-left {
         display: none;
     }
@@ -908,4 +1267,5 @@
 
         justify-content: flex-end;
     }
+
 }

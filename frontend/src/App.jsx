@@ -23,97 +23,104 @@ import Register from "./pages/Register";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import { EnvironmentProvider } from "./context/EnvironmentContext";
+
 function App() {
   return (
-    <Routes>
+    <EnvironmentProvider>
 
-      {/* Public Authentication Pages */}
+      <Routes>
 
-      <Route
-        path="/login"
-        element={<Login />}
-      />
+        {/* ============================
+            PUBLIC AUTHENTICATION
+        ============================ */}
 
-      <Route
-        path="/register"
-        element={<Register />}
-      />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-      {/* Protected Application */}
+        {/* ============================
+            PROTECTED APPLICATION
+        ============================ */}
 
-      <Route
-        path="/*"
-        element={
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
 
-          <ProtectedRoute>
+              <div className="app-layout">
 
-            <div className="app-layout">
+                <Sidebar />
 
-              <Sidebar />
+                <div className="main-section">
 
-              <div className="main-section">
+                  <Navbar />
 
-                <Navbar />
+                  <main className="page-content">
 
-                <main className="page-content">
+                    <Routes>
 
-                  <Routes>
+                      <Route
+                        path="/"
+                        element={<Dashboard />}
+                      />
 
-                    <Route
-                      path="/"
-                      element={<Dashboard />}
-                    />
+                      <Route
+                        path="/features"
+                        element={<Features />}
+                      />
 
-                    <Route
-                      path="/features"
-                      element={<Features />}
-                    />
+                      <Route
+                        path="/flags/:key"
+                        element={<FlagDetail />}
+                      />
 
-                    <Route
-                      path="/flags/:key"
-                      element={<FlagDetail />}
-                    />
+                      <Route
+                        path="/releases"
+                        element={<Releases />}
+                      />
 
-                    <Route
-                      path="/releases"
-                      element={<Releases />}
-                    />
+                      <Route
+                        path="/environments"
+                        element={<Environments />}
+                      />
 
-                    <Route
-                      path="/environments"
-                      element={<Environments />}
-                    />
+                      <Route
+                        path="/cleanup"
+                        element={<CleanupSuggestions />}
+                      />
 
-                    <Route
-                      path="/cleanup"
-                      element={<CleanupSuggestions />}
-                    />
+                      <Route
+                        path="/audit-logs"
+                        element={<AuditLogs />}
+                      />
 
-                    <Route
-                      path="/audit-logs"
-                      element={<AuditLogs />}
-                    />
+                      <Route
+                        path="/evaluate"
+                        element={<EvaluateFlag />}
+                      />
 
-                    <Route
-                      path="/evaluate"
-                      element={<EvaluateFlag />}
-                    />
+                    </Routes>
 
-                  </Routes>
+                  </main>
 
-                </main>
+                </div>
 
               </div>
 
-            </div>
+            </ProtectedRoute>
+          }
+        />
 
-          </ProtectedRoute>
+      </Routes>
 
-        }
-      />
-
-    </Routes>
+    </EnvironmentProvider>
   );
 }
 

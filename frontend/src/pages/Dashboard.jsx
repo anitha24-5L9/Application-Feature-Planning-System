@@ -1,122 +1,270 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getFlags } from "../services/api";
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useEnvironment,
+} from "../context/EnvironmentContext";
+
+import {
+  getFlags,
+} from "../services/api";
+
 import "../styles/dashboard.css";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
 
-  const [flags, setFlags] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const navigate =
+    useNavigate();
+
+  const {
+    environment,
+  } = useEnvironment();
+
+  const [flags, setFlags] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  // ========================================
+  // Load flags whenever environment changes
+  // ========================================
 
   useEffect(() => {
     loadFlags();
-  }, []);
+  }, [environment]);
 
   async function loadFlags() {
+
+    setLoading(true);
+
     try {
-      const data = await getFlags();
-      setFlags(data);
+
+      const data =
+        await getFlags();
+
+      const allFlags =
+        Array.isArray(data)
+          ? data
+          : [];
+
+      const environmentFlags =
+        allFlags.filter((flag) => {
+
+          if (!flag.environment) {
+            return true;
+          }
+
+          return (
+            String(flag.environment)
+              .toLowerCase() ===
+            environment.toLowerCase()
+          );
+        });
+
+      setFlags(
+        environmentFlags
+      );
+
     } catch (error) {
-      console.error("Error loading flags:", error);
+
+      console.error(
+        "Error loading flags:",
+        error
+      );
+
+      setFlags([]);
+
     } finally {
+
       setLoading(false);
+
     }
   }
 
-  const totalFlags = flags.length;
+  // ========================================
+  // Statistics
+  // ========================================
 
-  const enabledFlags = flags.filter(
-    (flag) => flag.enabled
-  ).length;
+  const totalFlags =
+    flags.length;
 
-  const disabledFlags = totalFlags - enabledFlags;
+  const enabledFlags =
+    flags.filter(
+      (flag) => flag.enabled
+    ).length;
 
-  const teams = new Set(
-    flags
-      .map((flag) => flag.owner_team)
-      .filter(Boolean)
-  ).size;
+  const disabledFlags =
+    totalFlags -
+    enabledFlags;
+
+  const teams =
+    new Set(
+      flags
+        .map(
+          (flag) =>
+            flag.owner_team
+        )
+        .filter(Boolean)
+    ).size;
 
   const enabledPercentage =
     totalFlags > 0
-      ? Math.round((enabledFlags / totalFlags) * 100)
+      ? Math.round(
+          (enabledFlags /
+            totalFlags) *
+            100
+        )
       : 0;
 
   const disabledPercentage =
     totalFlags > 0
-      ? Math.round((disabledFlags / totalFlags) * 100)
+      ? Math.round(
+          (disabledFlags /
+            totalFlags) *
+            100
+        )
       : 0;
 
+  // ========================================
+  // UI
+  // ========================================
+
   return (
-    <div className="dashboard-page">
+    <div>
 
       {/* ================= HEADER ================= */}
 
       <div className="dashboard-header">
+
         <div>
-          <h1>Dashboard</h1>
+
+          <h1>
+            Dashboard
+          </h1>
+
           <p>
-            Overview of your feature flags and
+            Overview of your{" "}
+            <strong>
+              {environment}
+            </strong>{" "}
+            feature flags and
             configuration activity.
           </p>
+
         </div>
+
       </div>
 
+      {/* ================= ENVIRONMENT ================= */}
+
+      <div className="environment-page-info">
+
+        <span>
+          🌍
+        </span>
+
+        <span>
+          Current Environment:
+        </span>
+
+        <strong>
+          {environment}
+        </strong>
+
+      </div>
 
       {/* ================= STATISTICS ================= */}
 
       <div className="dashboard-stats">
 
         <div className="stat-card">
+
           <div className="stat-info">
-            <span>Total Flags</span>
-            <strong>{totalFlags}</strong>
+
+            <span>
+              Total Flags
+            </span>
+
+            <strong>
+              {totalFlags}
+            </strong>
+
           </div>
 
           <div className="stat-icon blue">
             🚩
           </div>
+
         </div>
 
-
         <div className="stat-card">
+
           <div className="stat-info">
-            <span>Enabled Flags</span>
-            <strong>{enabledFlags}</strong>
+
+            <span>
+              Enabled Flags
+            </span>
+
+            <strong>
+              {enabledFlags}
+            </strong>
+
           </div>
 
           <div className="stat-icon green">
             ✓
           </div>
+
         </div>
 
-
         <div className="stat-card">
+
           <div className="stat-info">
-            <span>Disabled Flags</span>
-            <strong>{disabledFlags}</strong>
+
+            <span>
+              Disabled Flags
+            </span>
+
+            <strong>
+              {disabledFlags}
+            </strong>
+
           </div>
 
           <div className="stat-icon red">
             ✕
           </div>
+
         </div>
 
-
         <div className="stat-card">
+
           <div className="stat-info">
-            <span>Owner Teams</span>
-            <strong>{teams}</strong>
+
+            <span>
+              Owner Teams
+            </span>
+
+            <strong>
+              {teams}
+            </strong>
+
           </div>
 
           <div className="stat-icon purple">
             👥
           </div>
+
         </div>
 
       </div>
-
 
       {/* ================= FLAG STATUS ================= */}
 
@@ -125,12 +273,17 @@ export default function Dashboard() {
         <div className="dashboard-card-header">
 
           <div>
-            <h2>Flag Status</h2>
+
+            <h2>
+              Flag Status
+            </h2>
 
             <p>
-              Distribution of enabled and disabled
-              feature flags.
+              Distribution of enabled
+              and disabled{" "}
+              {environment} feature flags.
             </p>
+
           </div>
 
           <span className="status-total">
@@ -139,11 +292,10 @@ export default function Dashboard() {
 
         </div>
 
-
         {loading ? (
 
           <div className="dashboard-loading">
-            Loading flag status...
+            Loading {environment} flag status...
           </div>
 
         ) : (
@@ -155,8 +307,15 @@ export default function Dashboard() {
             <div className="status-row">
 
               <div className="status-label">
-                <span>Enabled</span>
-                <strong>{enabledFlags}</strong>
+
+                <span>
+                  Enabled
+                </span>
+
+                <strong>
+                  {enabledFlags}
+                </strong>
+
               </div>
 
               <div className="status-track">
@@ -164,7 +323,8 @@ export default function Dashboard() {
                 <div
                   className="status-fill enabled-fill"
                   style={{
-                    width: `${enabledPercentage}%`,
+                    width:
+                      `${enabledPercentage}%`,
                   }}
                 />
 
@@ -176,14 +336,20 @@ export default function Dashboard() {
 
             </div>
 
-
             {/* Disabled */}
 
             <div className="status-row">
 
               <div className="status-label">
-                <span>Disabled</span>
-                <strong>{disabledFlags}</strong>
+
+                <span>
+                  Disabled
+                </span>
+
+                <strong>
+                  {disabledFlags}
+                </strong>
+
               </div>
 
               <div className="status-track">
@@ -191,7 +357,8 @@ export default function Dashboard() {
                 <div
                   className="status-fill disabled-fill"
                   style={{
-                    width: `${disabledPercentage}%`,
+                    width:
+                      `${disabledPercentage}%`,
                   }}
                 />
 
@@ -209,11 +376,9 @@ export default function Dashboard() {
 
       </div>
 
-
       {/* ================= BOTTOM SECTION ================= */}
 
       <div className="dashboard-bottom-grid">
-
 
         {/* ================= RECENT ACTIVITY ================= */}
 
@@ -222,15 +387,19 @@ export default function Dashboard() {
           <div className="dashboard-card-header">
 
             <div>
-              <h2>Recent Activity</h2>
+
+              <h2>
+                Recent Activity
+              </h2>
 
               <p>
-                Latest feature flag status.
+                Latest {environment}
+                feature flag status.
               </p>
+
             </div>
 
           </div>
-
 
           <div className="activity-list">
 
@@ -243,58 +412,64 @@ export default function Dashboard() {
             ) : flags.length === 0 ? (
 
               <div className="activity-empty">
-                No feature flags found.
+                No feature flags found
+                in {environment}.
               </div>
 
             ) : (
 
-              flags.slice(0, 6).map((flag) => (
+              flags
+                .slice(0, 6)
+                .map((flag) => (
 
-                <div
-                  className="activity-item"
-                  key={flag.key}
-                >
+                  <div
+                    className="activity-item"
+                    key={flag.key}
+                  >
 
-                  <div className="activity-icon">
-                    {flag.enabled ? "✓" : "✕"}
-                  </div>
-
-                  <div className="activity-content">
-
-                    <strong>
-                      {flag.key}
-                    </strong>
-
-                    <span>
+                    <div className="activity-icon">
                       {flag.enabled
-                        ? "Enabled"
+                        ? "✓"
+                        : "✕"}
+                    </div>
+
+                    <div className="activity-content">
+
+                      <strong>
+                        {flag.key}
+                      </strong>
+
+                      <span>
+                        {flag.enabled
+                          ? "Enabled"
+                          : "Disabled"}
+                      </span>
+
+                    </div>
+
+                    <span
+                      className={
+                        flag.enabled
+                          ? "activity-status enabled"
+                          : "activity-status disabled"
+                      }
+                    >
+
+                      {flag.enabled
+                        ? "Active"
                         : "Disabled"}
+
                     </span>
 
                   </div>
 
-                  <span
-                    className={
-                      flag.enabled
-                        ? "activity-status enabled"
-                        : "activity-status disabled"
-                    }
-                  >
-                    {flag.enabled
-                      ? "Active"
-                      : "Disabled"}
-                  </span>
-
-                </div>
-
-              ))
+                ))
 
             )}
 
           </div>
 
         </div>
-
 
         {/* ================= QUICK ACTIONS ================= */}
 
@@ -303,22 +478,28 @@ export default function Dashboard() {
           <div className="dashboard-card-header">
 
             <div>
-              <h2>Quick Actions</h2>
+
+              <h2>
+                Quick Actions
+              </h2>
 
               <p>
-                Quickly access common operations.
+                Quickly access common
+                operations.
               </p>
+
             </div>
 
           </div>
-
 
           <div className="quick-actions-list">
 
             <button
               className="quick-action-btn"
               onClick={() =>
-                navigate("/features?action=create")
+                navigate(
+                  "/features?action=create"
+                )
               }
             >
 
@@ -343,7 +524,6 @@ export default function Dashboard() {
               </span>
 
             </button>
-
 
             <button
               className="quick-action-btn"
@@ -374,7 +554,6 @@ export default function Dashboard() {
 
             </button>
 
-
             <button
               className="quick-action-btn"
               onClick={() =>
@@ -403,7 +582,6 @@ export default function Dashboard() {
               </span>
 
             </button>
-
 
             <button
               className="quick-action-btn"

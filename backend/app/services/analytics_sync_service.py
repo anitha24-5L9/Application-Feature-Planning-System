@@ -10,59 +10,78 @@ class AnalyticsSyncService:
 
     PREFIX = "analytics:*"
 
-
     @classmethod
     def sync(cls, db: Session):
 
         keys = redis_client.keys(cls.PREFIX)
 
         inserted = 0
-
+        updated = 0
 
         for raw_key in keys:
 
-            key = raw_key.decode() if isinstance(raw_key, bytes) else raw_key
-
+            key = (
+                raw_key.decode()
+                if isinstance(raw_key, bytes)
+                else raw_key
+            )
 
             parts = key.split(":")
 
-
-            # Ignore invalid old keys
+            # Expected:
+            # analytics:{flag_key}:{date}:{hour}
             if len(parts) != 4:
                 continue
 
-
             _, flag_key, date_str, hour = parts
-
 
             value = redis_client.get(raw_key)
 
             if value is None:
                 continue
 
-
             count = int(value)
 
+            date_value = datetime.strptime(
+                date_str,
+                "%Y-%m-%d"
+            ).date()
 
-            analytics = EvaluationAnalytics(
-                flag_key=flag_key,
-                date=datetime.strptime(
-                    date_str,
-                    "%Y-%m-%d"
-                ).date(),
-                hour=int(hour),
-                evaluation_count=count
+            hour_value = int(hour)
+
+            # Check whether this analytics record
+            # already exists in SQLite
+            analytics = (
+                db.query(EvaluationAnalytics)
+                .filter(
+                    EvaluationAnalytics.flag_key == flag_key,
+                    EvaluationAnalytics.date == date_value,
+                    EvaluationAnalytics.hour == hour_value
+                )
+                .first()
             )
 
+            if analytics:
 
-            db.add(analytics)
+                analytics.evaluation_count = count
+                updated += 1
 
-            inserted += 1
+            else:
 
+                analytics = EvaluationAnalytics(
+                    flag_key=flag_key,
+                    date=date_value,
+                    hour=hour_value,
+                    evaluation_count=count
+                )
+
+                db.add(analytics)
+
+                inserted += 1
 
         db.commit()
 
-
         return {
-            "records_inserted": inserted
+            "records_inserted": inserted,
+            "records_updated": updated
         }

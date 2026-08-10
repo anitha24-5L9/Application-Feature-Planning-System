@@ -1,45 +1,114 @@
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+} from "react";
 
-export const EnvironmentContext = createContext();
+// ==========================================
+// Environment Context
+// ==========================================
 
-const ENVIRONMENTS = [
-  "Development",
-  "Testing",
-  "Production",
+export const EnvironmentContext =
+  createContext(null);
+
+// ==========================================
+// Available Environments
+// ==========================================
+
+const DEFAULT_ENVIRONMENTS = [
+  "development",
+  "testing",
+  "staging",
 ];
 
-export function EnvironmentProvider({ children }) {
-  const [environment, setEnvironment] = useState(() => {
-    return (
-      localStorage.getItem("selectedEnvironment") ||
-      "Development"
-    );
-  });
+// ==========================================
+// Environment Provider
+// ==========================================
 
-  useEffect(() => {
-    localStorage.setItem(
-      "selectedEnvironment",
-      environment
-    );
-  }, [environment]);
+export function EnvironmentProvider({
+  children,
+}) {
+  const [environments] = useState(
+    DEFAULT_ENVIRONMENTS
+  );
 
-  function changeEnvironment(value) {
-    if (!ENVIRONMENTS.includes(value)) {
+  const [environment, setEnvironmentState] =
+    useState(() => {
+      const savedEnvironment =
+        localStorage.getItem(
+          "selectedEnvironment"
+        );
+
+      if (
+        savedEnvironment &&
+        DEFAULT_ENVIRONMENTS.includes(
+          savedEnvironment.toLowerCase()
+        )
+      ) {
+        return savedEnvironment.toLowerCase();
+      }
+
+      return "development";
+    });
+
+  // ========================================
+  // Change Environment
+  // ========================================
+
+  function setEnvironment(value) {
+    const normalizedValue =
+      String(value || "")
+        .trim()
+        .toLowerCase();
+
+    if (
+      !DEFAULT_ENVIRONMENTS.includes(
+        normalizedValue
+      )
+    ) {
       return;
     }
 
-    setEnvironment(value);
+    setEnvironmentState(
+      normalizedValue
+    );
+
+    localStorage.setItem(
+      "selectedEnvironment",
+      normalizedValue
+    );
   }
+
+  // ========================================
+  // Context Value
+  // ========================================
 
   return (
     <EnvironmentContext.Provider
       value={{
         environment,
-        setEnvironment: changeEnvironment,
-        environments: ENVIRONMENTS,
+        setEnvironment,
+        environments,
       }}
     >
       {children}
     </EnvironmentContext.Provider>
   );
+}
+
+// ==========================================
+// Custom Hook
+// ==========================================
+
+export function useEnvironment() {
+  const context =
+    useContext(EnvironmentContext);
+
+  if (!context) {
+    throw new Error(
+      "useEnvironment must be used inside EnvironmentProvider"
+    );
+  }
+
+  return context;
 }

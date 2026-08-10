@@ -7,10 +7,10 @@ class EvaluationAnalytics(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    flag_key = Column(String, index=True)
+    flag_key = Column(String, index=True, nullable=False)
 
-    date = Column(Date, index=True)
+    date = Column(Date, index=True, nullable=False)
 
-    hour = Column(Integer)
+    hour = Column(Integer, nullable=False)
 
-    evaluation_count = Column(Integer, default=0)
+    evaluation_count = Column(Integer, default=0, nullable=False)

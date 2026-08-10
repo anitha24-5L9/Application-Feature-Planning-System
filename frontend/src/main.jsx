@@ -1,45 +1,45 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import {
+  BrowserRouter,
+} from "react-router-dom";
 
 import App from "./App";
-import "./index.css";
 
-import { EnvironmentProvider } from "./context/EnvironmentContext";
-import { AuthProvider } from "./context/AuthContext";
-import { ThemeProvider } from "./context/ThemeContext";
+import {
+  EnvironmentProvider,
+} from "./context/EnvironmentContext";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+import {
+  AuthProvider,
+} from "./context/AuthContext";
 
-<React.StrictMode>
+import {
+  ThemeProvider,
+} from "./context/ThemeContext";
 
-<BrowserRouter>
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
+  <React.StrictMode>
 
+    <BrowserRouter>
 
-<ThemeProvider>
+      <AuthProvider>
 
+        <ThemeProvider>
 
-<AuthProvider>
+          <EnvironmentProvider>
 
+            <App />
 
-<EnvironmentProvider>
+          </EnvironmentProvider>
 
+        </ThemeProvider>
 
-<App />
+      </AuthProvider>
 
+    </BrowserRouter>
 
-</EnvironmentProvider>
-
-
-</AuthProvider>
-
-
-</ThemeProvider>
-
-
-</BrowserRouter>
-
-
-</React.StrictMode>
-
+  </React.StrictMode>
 );

@@ -1,5 +1,15 @@
-import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useSearchParams,
+} from "react-router-dom";
+
+import {
+  useEnvironment,
+} from "../context/EnvironmentContext";
 
 import AddFlagForm from "../components/AddFlagForm";
 import FlagTable from "../components/FlagTable";
@@ -14,88 +24,213 @@ import {
 import "../styles/flag.css";
 
 function Features() {
-  const [searchParams] = useSearchParams();
+  const [searchParams] =
+    useSearchParams();
 
-  const action = searchParams.get("action");
+  const action =
+    searchParams.get("action");
 
-  const [flags, setFlags] = useState([]);
-  const [open, setOpen] = useState(action === "create");
-  const [editFlag, setEditFlag] = useState(null);
+  const {
+    environment,
+  } = useEnvironment();
+
+  const [flags, setFlags] =
+    useState([]);
+
+  const [open, setOpen] =
+    useState(action === "create");
+
+  const [editFlag, setEditFlag] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  // ========================================
+  // Load flags whenever environment changes
+  // ========================================
 
   useEffect(() => {
     loadFlags();
-  }, []);
+  }, [environment]);
 
   async function loadFlags() {
-    console.log("loadFlags() called");
+    console.log(
+      "Loading flags for environment:",
+      environment
+    );
+
+    setLoading(true);
 
     try {
       const data = await getFlags();
 
-      console.log("Received data:", data);
+      console.log(
+        "All flags received:",
+        data
+      );
 
-      setFlags(data);
+      const allFlags =
+        Array.isArray(data)
+          ? data
+          : [];
+
+      // ====================================
+      // Environment filtering
+      // ====================================
+
+      const environmentFlags =
+        allFlags.filter((flag) => {
+
+          if (!flag.environment) {
+            return true;
+          }
+
+          return (
+            String(flag.environment)
+              .toLowerCase() ===
+            environment.toLowerCase()
+          );
+        });
+
+      console.log(
+        `Flags for ${environment}:`,
+        environmentFlags
+      );
+
+      setFlags(
+        environmentFlags
+      );
+
     } catch (error) {
-      console.error("Error while loading flags:", error);
+
+      console.error(
+        "Error while loading flags:",
+        error
+      );
+
+      setFlags([]);
+
+    } finally {
+
+      setLoading(false);
+
     }
   }
 
+  // ========================================
+  // Create Flag
+  // ========================================
+
   async function handleAdd(flag) {
     try {
-      await createFlag(flag);
+
+      await createFlag({
+        ...flag,
+        environment,
+      });
 
       await loadFlags();
 
       setOpen(false);
+
     } catch (error) {
-      console.error("Create feature failed:", error);
+
+      console.error(
+        "Create feature failed:",
+        error
+      );
 
       alert(error.message);
+
     }
   }
 
+  // ========================================
+  // Update Flag
+  // ========================================
+
   async function handleUpdate(flag) {
     try {
-      await updateFlag(flag.key, {
-        type: flag.type,
-        default_value: flag.default_value,
-        enabled: flag.enabled,
-        description: flag.description,
-        owner_team: flag.owner_team,
-      });
+
+      await updateFlag(
+        flag.key,
+        {
+          type: flag.type,
+          default_value:
+            flag.default_value,
+          enabled: flag.enabled,
+          description:
+            flag.description,
+          owner_team:
+            flag.owner_team,
+          environment,
+        }
+      );
 
       await loadFlags();
 
       setEditFlag(null);
       setOpen(false);
+
     } catch (error) {
-      console.error("Update feature failed:", error);
+
+      console.error(
+        "Update feature failed:",
+        error
+      );
 
       alert(error.message);
+
     }
   }
+
+  // ========================================
+  // Edit
+  // ========================================
 
   function handleEdit(flag) {
     setEditFlag(flag);
     setOpen(true);
   }
 
+  // ========================================
+  // Create
+  // ========================================
+
   function handleCreate() {
     setEditFlag(null);
     setOpen(true);
   }
 
-  const enabled = flags.filter((flag) => flag.enabled).length;
-  const disabled = flags.length - enabled;
+  // ========================================
+  // Statistics
+  // ========================================
 
-  const teams = new Set(
-    flags
-      .map((flag) => flag.owner_team)
-      .filter(Boolean)
-  ).size;
+  const enabled =
+    flags.filter(
+      (flag) => flag.enabled
+    ).length;
+
+  const disabled =
+    flags.length - enabled;
+
+  const teams =
+    new Set(
+      flags
+        .map(
+          (flag) =>
+            flag.owner_team
+        )
+        .filter(Boolean)
+    ).size;
+
+  // ========================================
+  // UI
+  // ========================================
 
   return (
-    <div className="feature-page">
+    <div>
 
       {/* ================================
           PAGE HEADER
@@ -104,26 +239,56 @@ function Features() {
       <div className="feature-header">
 
         <div className="page-header">
-          <h1>Feature Flags</h1>
+
+          <h1>
+            Feature Flags
+          </h1>
 
           <p>
-            Manage all feature flags
+            Manage feature flags for{" "}
+            <strong>
+              {environment}
+            </strong>{" "}
+            environment
           </p>
-        </div>
 
-        {/* CREATE BUTTON - TOP RIGHT */}
+        </div>
 
         <button
           type="button"
           className="create-feature-btn"
           onClick={handleCreate}
         >
-          <span className="create-icon">＋</span>
+
+          <span className="create-icon">
+            ＋
+          </span>
+
           Create Feature
+
         </button>
 
       </div>
 
+      {/* ================================
+          ENVIRONMENT INFO
+      ================================= */}
+
+      <div className="environment-page-info">
+
+        <span>
+          🌍
+        </span>
+
+        <span>
+          Showing flags for
+        </span>
+
+        <strong>
+          {environment}
+        </strong>
+
+      </div>
 
       {/* ================================
           STATISTICS
@@ -132,27 +297,54 @@ function Features() {
       <div className="stats-grid">
 
         <div className="stat-card">
-          <h2>{flags.length}</h2>
-          <span>Total Flags</span>
+
+          <h2>
+            {flags.length}
+          </h2>
+
+          <span>
+            Total Flags
+          </span>
+
         </div>
 
         <div className="stat-card">
-          <h2>{enabled}</h2>
-          <span>Enabled</span>
+
+          <h2>
+            {enabled}
+          </h2>
+
+          <span>
+            Enabled
+          </span>
+
         </div>
 
         <div className="stat-card">
-          <h2>{disabled}</h2>
-          <span>Disabled</span>
+
+          <h2>
+            {disabled}
+          </h2>
+
+          <span>
+            Disabled
+          </span>
+
         </div>
 
         <div className="stat-card">
-          <h2>{teams}</h2>
-          <span>Teams</span>
+
+          <h2>
+            {teams}
+          </h2>
+
+          <span>
+            Teams
+          </span>
+
         </div>
 
       </div>
-
 
       {/* ================================
           FEATURE FLAG TABLE
@@ -163,11 +355,16 @@ function Features() {
         <div className="table-header">
 
           <div>
-            <h2>Feature Flags</h2>
+
+            <h2>
+              Feature Flags
+            </h2>
 
             <p>
-              Manage and monitor your application features.
+              Manage and monitor your{" "}
+              {environment} feature flags.
             </p>
+
           </div>
 
           <span className="flag-count">
@@ -176,13 +373,34 @@ function Features() {
 
         </div>
 
-        <FlagTable
-          flags={flags}
-          onEdit={handleEdit}
-        />
+        {loading ? (
+
+          <div className="dashboard-loading">
+            Loading {environment} flags...
+          </div>
+
+        ) : flags.length === 0 ? (
+
+          <div className="dashboard-loading">
+
+            No feature flags found in{" "}
+            <strong>
+              {environment}
+            </strong>{" "}
+            environment.
+
+          </div>
+
+        ) : (
+
+          <FlagTable
+            flags={flags}
+            onEdit={handleEdit}
+          />
+
+        )}
 
       </div>
-
 
       {/* ================================
           CREATE / EDIT MODAL

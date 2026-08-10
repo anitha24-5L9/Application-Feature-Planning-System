@@ -12,8 +12,9 @@ from app.services.analytics_service import AnalyticsService
 
 VALID_ENVIRONMENTS = [
     "development",
+    "testing",
     "staging",
-    "production"
+    "production",
 ]
 
 
@@ -60,9 +61,16 @@ def evaluate_flag(
     if user_context is None:
         user_context = {}
 
-    user_id = user_context.get("user_id", "anonymous")
+    environment = environment.strip().lower()
 
-    cache_key = f"{flag_key}:{environment}:{user_id}"
+    user_id = user_context.get(
+        "user_id",
+        "anonymous"
+    )
+
+    cache_key = (
+        f"{flag_key}:{environment}:{user_id}"
+    )
 
     cached_result = get_cache(cache_key)
 
@@ -252,14 +260,17 @@ def evaluate_flag(
     # -----------------------------
     # Default Value
     # -----------------------------
+    default_enabled = str(
+    flag.default_value
+).lower() == "true"
     return cache_and_return(
-        cache_key,
-        {
-            "success": True,
-            "flag": flag.key,
-            "environment": environment,
-            "enabled": flag.default_value,
-            "reason": "Default Value",
-            "matched_rule": "No targeting rule matched"
-        }
-    )
+    cache_key,
+    {
+        "success": True,
+        "flag": flag.key,
+        "environment": environment,
+        "enabled": default_enabled,
+        "reason": "Default Value",
+        "matched_rule": "No targeting rule matched"
+    }
+)

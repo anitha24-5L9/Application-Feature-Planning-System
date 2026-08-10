@@ -17,14 +17,49 @@ function getAuthHeaders() {
 // Feature Flag APIs
 // ==========================================
 
-export async function getFlags() {
+export async function getFlags(environment = null) {
   const response = await fetch(`${API_URL}/flags/`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch flags");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  /*
+  ==========================================
+  Environment filtering
+  ==========================================
+  */
+
+  if (!environment) {
+    return data;
+  }
+
+  const selectedEnvironment =
+    String(environment)
+      .trim()
+      .toLowerCase();
+
+  return data.filter((flag) => {
+    const flagEnvironment =
+      String(
+        flag.environment ??
+          flag.environment_name ??
+          ""
+      )
+        .trim()
+        .toLowerCase();
+
+    return (
+      flagEnvironment ===
+      selectedEnvironment
+    );
+  });
 }
 
 export async function getFlag(key) {

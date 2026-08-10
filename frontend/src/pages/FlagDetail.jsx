@@ -4,8 +4,19 @@ import "./../styles/rollout.css";
 import TargetingPanel from "../components/TargetingPanel";
 import EvaluationChart from "../components/EvaluationChart";
 
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useParams,
+  Link,
+} from "react-router-dom";
+
+import {
+  useEnvironment,
+} from "../context/EnvironmentContext";
 
 import {
   getFlag,
@@ -18,16 +29,34 @@ import {
 function FlagDetail() {
   const { key } = useParams();
 
-  const [flag, setFlag] = useState(null);
-  const [rollout, setRollout] = useState(0);
-  const [environment, setEnvironment] =
-    useState("development");
+  // ==========================================
+  // Environment Context
+  // ==========================================
 
-  const [userId, setUserId] = useState("");
+  const {
+    environment,
+    setEnvironment,
+    environments,
+  } = useEnvironment();
+
+  // ==========================================
+  // State
+  // ==========================================
+
+  const [flag, setFlag] =
+    useState(null);
+
+  const [rollout, setRollout] =
+    useState(0);
+
+  const [userId, setUserId] =
+    useState("");
+
   const [evaluationResult, setEvaluationResult] =
     useState(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
   const [activeTab, setActiveTab] =
     useState("whitelist");
@@ -35,13 +64,18 @@ function FlagDetail() {
   const [chartRefresh, setChartRefresh] =
     useState(false);
 
+  // ==========================================
+  // Load Flag
+  // ==========================================
+
   useEffect(() => {
     loadFlag();
   }, [key]);
 
   async function loadFlag() {
     try {
-      const data = await getFlag(key);
+      const data =
+        await getFlag(key);
 
       setFlag(data);
 
@@ -49,12 +83,21 @@ function FlagDetail() {
         await getRolloutPercentage(key);
 
       setRollout(
-        rolloutData.rollout_percentage
+        Number(
+          rolloutData?.rollout_percentage || 0
+        )
       );
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Failed to load flag details:",
+        error
+      );
     }
   }
+
+  // ==========================================
+  // Save Rollout
+  // ==========================================
 
   async function saveRollout() {
     try {
@@ -67,7 +110,10 @@ function FlagDetail() {
         "Rollout updated successfully!"
       );
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Failed to update rollout:",
+        error
+      );
 
       alert(
         "Failed to update rollout."
@@ -75,46 +121,120 @@ function FlagDetail() {
     }
   }
 
+  // ==========================================
+  // Environment Change
+  // ==========================================
+
+  function handleEnvironmentChange(
+    event
+  ) {
+    const selectedEnvironment =
+      event.target.value;
+
+    setEnvironment(
+      selectedEnvironment
+    );
+
+    // Clear previous evaluation
+    setEvaluationResult(null);
+  }
+
+  // ==========================================
+  // Evaluate Feature
+  // ==========================================
+
   async function evaluateFeature() {
-    if (!flag) return;
+    if (!flag) {
+      return;
+    }
+
+    if (!environment) {
+      alert(
+        "Please select an environment."
+      );
+
+      return;
+    }
+
+    if (!userId.trim()) {
+      alert(
+        "Please enter a User ID."
+      );
+
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const result = await evaluateFlag({
-        flag_key: flag.key,
-        environment: environment,
-        user_context: {
-          user_id: userId,
-        },
-      });
+      setEvaluationResult(null);
 
-      setEvaluationResult(result);
+      const result =
+        await evaluateFlag({
+          flag_key: flag.key,
 
-      await syncAnalytics();
+          environment:
+            environment,
+
+          user_context: {
+            user_id:
+              userId.trim(),
+          },
+        });
+
+      setEvaluationResult(
+        result
+      );
+
+      try {
+        await syncAnalytics();
+      } catch (analyticsError) {
+        console.error(
+          "Analytics sync failed:",
+          analyticsError
+        );
+      }
 
       setChartRefresh(
-        (prev) => !prev
+        (previous) =>
+          !previous
       );
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Feature evaluation failed:",
+        error
+      );
 
-      alert("Evaluation failed");
+      alert(
+        "Evaluation failed"
+      );
     } finally {
       setLoading(false);
     }
   }
 
+  // ==========================================
+  // Loading State
+  // ==========================================
+
   if (!flag) {
     return (
-      <div className="flag-detail-page">
-        <h2>Loading...</h2>
+      <div className="flag-detail-loading">
+        Loading...
       </div>
     );
   }
 
+  // ==========================================
+  // UI
+  // ==========================================
+
   return (
     <div className="flag-detail-page">
+
+      {/* ======================================
+          BACK LINK
+      ====================================== */}
 
       <Link
         className="back-link"
@@ -123,88 +243,123 @@ function FlagDetail() {
         ← Back to Features
       </Link>
 
+
+      {/* ======================================
+          PAGE TITLE
+      ====================================== */}
+
       <h1 className="page-title">
         Flag Details
       </h1>
 
+
+      {/* ======================================
+          FEATURE INFORMATION
+      ====================================== */}
+
       <div className="detail-card">
 
-        <h2>Feature Information</h2>
+        <h2>
+          Feature Information
+        </h2>
 
-        <table className="detail-table">
+        <div className="detail-table-wrapper">
 
-          <tbody>
+          <table className="detail-table">
 
-            <tr>
-              <td className="label">
-                Feature Key
-              </td>
+            <tbody>
 
-              <td className="value">
-                {flag.key}
-              </td>
-            </tr>
+              <tr>
+                <td className="label">
+                  Feature Key
+                </td>
 
-            <tr>
-              <td className="label">
-                Type
-              </td>
+                <td className="value">
+                  {flag.key}
+                </td>
+              </tr>
 
-              <td className="value">
-                {flag.type}
-              </td>
-            </tr>
 
-            <tr>
-              <td className="label">
-                Default Value
-              </td>
+              <tr>
+                <td className="label">
+                  Type
+                </td>
 
-              <td className="value">
-                {String(flag.enabled)}
-              </td>
-            </tr>
+                <td className="value">
+                  {flag.type}
+                </td>
+              </tr>
 
-            <tr>
-              <td className="label">
-                Status
-              </td>
 
-              <td>
-                <span
-                  className={
+              <tr>
+                <td className="label">
+                  Default Value
+                </td>
+
+                <td className="value">
+                  {String(
+                    flag.default_value ??
                     flag.enabled
-                      ? "status-badge enabled"
-                      : "status-badge disabled"
-                  }
-                >
-                  {flag.enabled
-                    ? "Enabled"
-                    : "Disabled"}
-                </span>
-              </td>
-            </tr>
+                  )}
+                </td>
+              </tr>
 
-            <tr>
-              <td className="label">
-                Description
-              </td>
 
-              <td className="value">
-                {flag.description ||
-                  "No description"}
-              </td>
-            </tr>
+              <tr>
+                <td className="label">
+                  Status
+                </td>
 
-          </tbody>
+                <td className="value">
 
-        </table>
+                  <span
+                    className={
+                      flag.enabled
+                        ? "status-badge enabled"
+                        : "status-badge disabled"
+                    }
+                  >
+                    {flag.enabled
+                      ? "Enabled"
+                      : "Disabled"}
+                  </span>
+
+                </td>
+              </tr>
+
+
+              <tr>
+                <td className="label">
+                  Description
+                </td>
+
+                <td className="value">
+                  {flag.description ||
+                    "No description"}
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </div>
+
+
+      {/* ======================================
+          TARGETING RULES
+      ====================================== */}
 
       <h2 className="section-title">
         Targeting Rules
       </h2>
+
+
+      {/* ======================================
+          TABS
+      ====================================== */}
 
       <div className="detail-tabs">
 
@@ -216,11 +371,14 @@ function FlagDetail() {
               : "tab"
           }
           onClick={() =>
-            setActiveTab("whitelist")
+            setActiveTab(
+              "whitelist"
+            )
           }
         >
           👤 Whitelist
         </button>
+
 
         <button
           type="button"
@@ -230,11 +388,14 @@ function FlagDetail() {
               : "tab"
           }
           onClick={() =>
-            setActiveTab("groups")
+            setActiveTab(
+              "groups"
+            )
           }
         >
           👥 Group Targeting
         </button>
+
 
         <button
           type="button"
@@ -244,11 +405,14 @@ function FlagDetail() {
               : "tab"
           }
           onClick={() =>
-            setActiveTab("rollout")
+            setActiveTab(
+              "rollout"
+            )
           }
         >
           🎯 Rollout
         </button>
+
 
         <button
           type="button"
@@ -258,7 +422,9 @@ function FlagDetail() {
               : "tab"
           }
           onClick={() =>
-            setActiveTab("test")
+            setActiveTab(
+              "test"
+            )
           }
         >
           ⚡ Test Panel
@@ -266,88 +432,172 @@ function FlagDetail() {
 
       </div>
 
-      {(activeTab === "whitelist" ||
-        activeTab === "groups") && (
+
+      {/* ======================================
+          WHITELIST / GROUP TARGETING
+      ====================================== */}
+
+      {(
+        activeTab === "whitelist" ||
+        activeTab === "groups"
+      ) && (
+
         <TargetingPanel
           flagKey={flag.key}
           activeTab={activeTab}
         />
+
       )}
 
+
+      {/* ======================================
+          ROLLOUT
+      ====================================== */}
+
       {activeTab === "rollout" && (
+
         <div className="rollout-panel">
 
           <div className="rollout-header">
-            <h3>Rollout Percentage</h3>
+            <br></br>
+
+            <h3>
+              Rollout Percentage
+            </h3><br></br>
 
             <span className="rollout-value">
               {rollout}%
             </span>
+
           </div>
+
 
           <input
             type="range"
             min="0"
             max="100"
             value={rollout}
-            onChange={(e) =>
+            onChange={(event) =>
               setRollout(
-                Number(e.target.value)
+                Number(
+                  event.target.value
+                )
               )
             }
             className="rollout-slider"
           />
 
-          <button
+
+          <center><button
             className="rollout-button"
             onClick={saveRollout}
           >
             Save Rollout
-          </button>
+          </button></center>
 
         </div>
+
       )}
 
+
+      {/* ======================================
+          TEST PANEL
+      ====================================== */}
+
       {activeTab === "test" && (
+
         <div className="evaluation-panel">
+          <br></br><br></br>
 
-          <h3>Test Feature Flag</h3>
+          <h3>
+            Test Feature Flag
+          </h3><br></br>
 
-          <select
-            className="evaluation-select"
-            value={environment}
-            onChange={(e) =>
-              setEnvironment(
-                e.target.value
-              )
-            }
-          >
-            <option value="development">
-              Development
-            </option>
 
-            <option value="staging">
-              Staging
-            </option>
+          {/* ================================
+              ENVIRONMENT
+          ================================= */}
 
-            <option value="production">
-              Production
-            </option>
-          </select>
+          <div className="evaluation-field">
 
-          <input
-            className="evaluation-input"
-            type="text"
-            placeholder="Enter User ID"
-            value={userId}
-            onChange={(e) =>
-              setUserId(e.target.value)
-            }
-          />
+            <label
+              htmlFor="flag-environment"
+            >
+              🌍 Environment
+            </label>
+
+
+            <select
+              id="flag-environment"
+              className="evaluation-select"
+              value={
+                environment || ""
+              }
+              onChange={
+                handleEnvironmentChange
+              }
+            >
+
+              {environments.map(
+                (env, index) => (
+
+                  <option
+                    key={`${env}-${index}`}
+                    value={env}
+                  >
+                    {env}
+                  </option>
+
+                )
+              )}
+
+            </select>
+
+          </div>
+
+
+          {/* ================================
+              USER ID
+          ================================= */}
+
+          <div className="evaluation-field">
+
+            <label
+              htmlFor="flag-user-id"
+            >
+              User ID
+            </label>
+
+
+            <input
+              id="flag-user-id"
+              className="evaluation-input"
+              type="text"
+              placeholder="Enter User ID"
+              value={userId}
+              onChange={(event) => {
+                setUserId(
+                  event.target.value
+                );
+
+                setEvaluationResult(
+                  null
+                );
+              }}
+            />
+
+          </div>
+
+
+          {/* ================================
+              EVALUATE BUTTON
+          ================================= */}
 
           <button
             className="evaluation-button"
-            onClick={evaluateFeature}
+            onClick={
+              evaluateFeature
+            }
             disabled={loading}
           >
             {loading
@@ -355,14 +605,48 @@ function FlagDetail() {
               : "Evaluate"}
           </button>
 
+
+          {/* ================================
+              RESULT
+          ================================= */}
+
           {evaluationResult && (
+
             <div className="evaluation-result">
 
               <h3>
                 Evaluation Result
               </h3>
 
+
               <p className="result-item">
+
+                <strong>
+                  Environment:
+                </strong>{" "}
+
+                <span>
+                  {environment}
+                </span>
+
+              </p>
+
+
+              <p className="result-item">
+
+                <strong>
+                  User ID:
+                </strong>{" "}
+
+                <span>
+                  {userId}
+                </span>
+
+              </p>
+
+
+              <p className="result-item">
+
                 <strong>
                   Enabled:
                 </strong>{" "}
@@ -378,39 +662,62 @@ function FlagDetail() {
                     evaluationResult.enabled
                   )}
                 </span>
-              </p>
-
-              <p className="result-item">
-                <strong>
-                  Reason:
-                </strong>{" "}
-                {evaluationResult.reason}
-              </p>
-
-              <p className="result-item">
-
-                <strong>
-                  Source:
-                </strong>{" "}
-
-                <span
-                  className={
-                    evaluationResult.source ===
-                    "cache"
-                      ? "cache-badge"
-                      : "live-badge"
-                  }
-                >
-                  {evaluationResult.source}
-                </span>
 
               </p>
+
+
+              {evaluationResult.reason && (
+
+                <p className="result-item">
+
+                  <strong>
+                    Reason:
+                  </strong>{" "}
+
+                  {evaluationResult.reason}
+
+                </p>
+
+              )}
+
+
+              {evaluationResult.source && (
+
+                <p className="result-item">
+
+                  <strong>
+                    Source:
+                  </strong>{" "}
+
+                  <span
+                    className={
+                      evaluationResult.source ===
+                      "cache"
+                        ? "cache-badge"
+                        : "live-badge"
+                    }
+                  >
+                    {
+                      evaluationResult.source
+                    }
+                  </span>
+
+                </p>
+
+              )}
 
             </div>
+
           )}
 
         </div>
+
       )}
+
+
+      {/* ======================================
+          EVALUATION CHART
+      ====================================== */}
 
       <EvaluationChart
         flagKey={flag.key}

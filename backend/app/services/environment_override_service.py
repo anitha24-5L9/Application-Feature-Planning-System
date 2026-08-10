@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.flag import Flag
 from app.models.environment import Environment
 from app.models.environment_override import EnvironmentOverride
+
 from app.cache.redis_client import clear_flag_cache
 
 
@@ -12,24 +13,42 @@ def create_or_update_override(
     environment_name: str,
     override_value: bool,
 ):
-    flag = db.query(Flag).filter(
-        Flag.key == flag_key
-    ).first()
+    flag = (
+        db.query(Flag)
+        .filter(
+            Flag.key == flag_key
+        )
+        .first()
+    )
 
     if not flag:
         return None
 
-    environment = db.query(Environment).filter(
-        Environment.name == environment_name
-    ).first()
+    environment_name = (
+        environment_name
+        .strip()
+        .lower()
+    )
+
+    environment = (
+        db.query(Environment)
+        .filter(
+            Environment.name == environment_name
+        )
+        .first()
+    )
 
     if not environment:
         return "environment_not_found"
 
-    override = db.query(EnvironmentOverride).filter(
-        EnvironmentOverride.flag_id == flag.id,
-        EnvironmentOverride.environment_id == environment.id,
-    ).first()
+    override = (
+        db.query(EnvironmentOverride)
+        .filter(
+            EnvironmentOverride.flag_id == flag.id,
+            EnvironmentOverride.environment_id == environment.id,
+        )
+        .first()
+    )
 
     if override:
         override.override_value = override_value
@@ -43,40 +62,54 @@ def create_or_update_override(
 
         db.add(override)
 
-        db.commit()
-        db.refresh(override)
+    db.commit()
+    db.refresh(override)
 
-        # Clear Redis cache for this flag
-        clear_flag_cache(flag.key)
+    clear_flag_cache(flag.key)
 
-        return {
-            "id": override.id,
-            "flag_key": flag.key,
-            "environment_name": environment.name,
-            "override_value": override.override_value,
-        }
+    return {
+        "id": override.id,
+        "flag_key": flag.key,
+        "environment_name": environment.name,
+        "override_value": override.override_value,
+    }
 
 
-def get_overrides(db: Session, flag_key: str):
-
-    flag = db.query(Flag).filter(
-        Flag.key == flag_key
-    ).first()
+def get_overrides(
+    db: Session,
+    flag_key: str
+):
+    flag = (
+        db.query(Flag)
+        .filter(
+            Flag.key == flag_key
+        )
+        .first()
+    )
 
     if not flag:
         return None
 
-    overrides = db.query(EnvironmentOverride).filter(
-        EnvironmentOverride.flag_id == flag.id
-    ).all()
+    overrides = (
+        db.query(EnvironmentOverride)
+        .filter(
+            EnvironmentOverride.flag_id == flag.id
+        )
+        .all()
+    )
 
     result = []
 
     for item in overrides:
 
-        environment = db.query(Environment).filter(
-            Environment.id == item.environment_id
-        ).first()
+        environment = (
+            db.query(Environment)
+            .filter(
+                Environment.id ==
+                item.environment_id
+            )
+            .first()
+        )
 
         if not environment:
             continue
